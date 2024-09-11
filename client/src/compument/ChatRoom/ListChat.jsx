@@ -1,5 +1,6 @@
 import { Avatar, Box, Grid2, List, TextField, Typography } from "@mui/material";
 import React from "react";
+import { TIMEAGO } from './../../function/index';
 
 export default function ListChat() {
   const data = [
@@ -88,19 +89,30 @@ export default function ListChat() {
             key={index}
             sx={{ borderBottom: 1, borderColor: "grey.300", paddingY: 1 }}
           >
-            <Box>
-              <Box width={100}>
+            <Grid2 container>
+              <Grid2 size={2}>
                 {item.listUser.map((user, index) => (
                   <Avatar
                     src={user.photoURL}
-                    sx={{ width: "25%", height: "25%" }}
+                    sx={{ width: "70%", height: "70%" }}
                   />
                 ))}
-              </Box>
+              </Grid2>
+              <Grid2 size={9}>
               <Typography variant="h6" fontWeight={"600"}>
-                {item.listUser[0].name}
+                {item.listUser.map((user, index) => (
+                  <span key={index}>
+                    {user.name}
+                    {index < item.listUser.length - 1 && ", "}
+                  </span>
+                ))}
               </Typography>
-            </Box>
+              <Typography>{TIMEAGO(item.LastMessage.time)}</Typography>
+              <Typography variant="body2" color="grey">
+                {item.LastMessage.content}
+              </Typography>
+              </Grid2>
+            </Grid2>
           </Box>
         ))}
       </Grid2>
