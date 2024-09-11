@@ -1,20 +1,19 @@
-import { Box, Typography } from '@mui/material'
-import React from 'react'
-import UserMenu from './../compument/UserMenu';
-import Board from '../compument/Board';
+import { Box, Grid2 } from "@mui/material";
+import React from "react";
+import ChatBar from "../compument/ChatRoom/ChatBar";
+import { Outlet } from "react-router-dom";
 
 export default function Home() {
   return (
-    <Box>
-      <Typography variant="h1">Home</Typography>
-      <Box sx={{
-        display: 'flex',
-        justifyContent: 'flex-end',
-        mb: 2
-      }} >
-      <UserMenu/>
-      </Box>
-      <Board/>
-    </Box>
-  )
+    <>
+      <Grid2 container padding={1}>
+        <Grid2 item height={"98vh"} size={0.4} border={1}>
+          <ChatBar />
+        </Grid2>
+        <Grid2 item height={"98vh"} size={11.6} border={1}>
+          <Outlet />
+        </Grid2>
+      </Grid2>
+    </>
+  );
 }

@@ -1,14 +1,13 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-
 const firebaseConfig = {
-  apiKey: "AIzaSyDfiGiLejpnObyRMuRpO35fYAjA6iMprlw",
-  authDomain: "caro-game-app.firebaseapp.com",
-  projectId: "caro-game-app",
-  storageBucket: "caro-game-app.appspot.com",
-  messagingSenderId: "491708874351",
-  appId: "1:491708874351:web:691b15c10b8d379517979a",
-  measurementId: "G-23YJ1TBRX5"
+  apiKey: "AIzaSyDY8XxQJkdGK4IyCrYRNtFHPkKxsHYc1-o",
+  authDomain: "chat-app-53c04.firebaseapp.com",
+  projectId: "chat-app-53c04",
+  storageBucket: "chat-app-53c04.appspot.com",
+  messagingSenderId: "1089632944052",
+  appId: "1:1089632944052:web:c781791452ec3709dd7ce1",
+  measurementId: "G-M06K9W71PS"
 };
 
 const app = initializeApp(firebaseConfig);

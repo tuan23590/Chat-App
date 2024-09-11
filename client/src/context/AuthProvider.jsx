@@ -16,7 +16,6 @@ export default function AuthProvider({ children }) {
         if (user?.uid) {
           setUser(user);
           localStorage.setItem("accessToken", user.accessToken);
-          navigate("/");
           return;
         }else{
           setUser({});
