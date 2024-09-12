@@ -16,6 +16,7 @@ export const APISearchUser = async (name) => {
     name
     photoURL
     uid
+    email
   }
 }`;
   const {searchUser} = await GraphQLrequest({query, variables: {name}});

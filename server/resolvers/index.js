@@ -6,6 +6,10 @@ export const resolvers = {
       return user;
     },
     getRoom: async (parent, args) => {
+      const room = await RoomModel.findOne({ _id: args.roomId });
+      return room;
+    },
+    getListRoom: async (parent, args) => {
       const rooms = await RoomModel.find({ listUser: args.uid });
       return rooms;
     },
@@ -57,22 +61,30 @@ export const resolvers = {
       return newUser;
     },
     createRoom: async (parent, args) => {
-      const room = await RoomModel.findOne({ listUser: args.uid });
-      if (room) {
-        return room;
-      }
-      const dataMessage = JSON.parse(args.messages);
+      try {
+        const dataMessage = JSON.parse(args.messages);
       let listIdMessage = [];
       for (let i = 0; i < dataMessage.length; i++) {
-        const newMessage = new MessageModel(dataMessage[i]);
+        const newMessage = new MessageModel();
+        newMessage.sender = dataMessage[i].sender.uid;
+        newMessage.content = dataMessage[i].content;
         await newMessage.save();
         listIdMessage.push(newMessage._id);
+      }
+        const room = await RoomModel.findOne({ listUser: args.uid });
+      if (room) {
+        room.listMessage.push(...listIdMessage);
+        await room.save();
+        return room;
       }
       const newRoom = new RoomModel(args);
       newRoom.listUser = args.uid;
       newRoom.listMessage = listIdMessage;
       await newRoom.save();
       return newRoom;
+      } catch (error) {
+        console.log(error);
+      }
     },
     createMessage: async (parent, args) => {
       const room = await RoomModel.findOne({ _id: args.roomId });

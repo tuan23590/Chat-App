@@ -6,6 +6,7 @@ type User {
     email: String
     role: String
     photoURL: String
+    status: String
 }    
 type Message {
     id: String
@@ -26,7 +27,8 @@ type Room {
 }
 type Query {
     getUser(uid: String): User,
-    getRoom(uid: String): [Room],
+    getRoom(roomId: String): Room,
+    getListRoom(uid: String): [Room],
     searchUser(name: String): [User],
     getMessages(uid: String): [Message],
 }

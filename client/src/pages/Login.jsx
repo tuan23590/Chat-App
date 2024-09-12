@@ -2,9 +2,11 @@ import React from 'react'
 import { Box, Button, Typography } from '@mui/material'
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import { APICreateUser } from '../utils/UserUtil';
+import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
    const auth = getAuth();
+   const navigate = useNavigate();
    const handleLoginWithGoogle = async () => {
       const provider = new GoogleAuthProvider();
       const res = await signInWithPopup(auth, provider);
@@ -15,7 +17,9 @@ export default function Login() {
             email: res.user.email,
             photoUrl: res.user.photoURL
          });
-         console.log(data);
+      if(data) {
+         navigate('/');
+      }
    }
   return (
    <Box sx={{

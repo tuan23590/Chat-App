@@ -28,7 +28,7 @@ export default function Header({selectedUser, setSelectedUser}) {
             setListUser([]);
           }}
           options={listUser}
-          getOptionLabel={(option) => option.name}
+          getOptionLabel={(option) => option.name + ' - ' + option.email}
           renderInput={(params) => (
             <TextField
               {...params}

@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import SendIcon from '@mui/icons-material/Send';
 import { APICreateMessage } from "../../utils/MessageUtils";
 
-export default function ChatInput({ messages, setMessages,createRoom, uid, roomId }) {
+export default function ChatInput({ messages, setMessages, uid, roomId }) {
   const [message, setMessage] = useState("");
   const handleSendMessage = async () => {
     if (message.trim() === "") return;
@@ -14,7 +14,7 @@ export default function ChatInput({ messages, setMessages,createRoom, uid, roomI
       roomId: roomId
     }
     await APICreateMessage(formData);
-    setMessages([...messages, { content: message, sender: "JinhwkRuGYQr0sqPyEy62z7hAZA2",id: messages.length + 1 }]);
+    setMessages([...messages, { content: message, sender: {uid},id: messages.length + 1 }]);
     setMessage("");
   }
 

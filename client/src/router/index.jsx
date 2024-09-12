@@ -7,6 +7,7 @@ import ErrorPage from "../pages/ErrorPage";
 import ListChat from './../compument/ChatRoom/ListChat';
 import Pending from './../compument/ChatRoom/Pending';
 import ChatWindows from "../compument/ChatRoom/ChatWindows";
+import { APIGetRoom } from "../utils/RoomUtil";
 
 const childrenChat = (parentName) => {
   return [
@@ -16,7 +17,8 @@ const childrenChat = (parentName) => {
     },
     {
       element: <ChatWindows />,
-      path: `${parentName}/:id`,
+      path: `${parentName}/:roomId`,
+      loader: APIGetRoom,
     },
   ];
 }
