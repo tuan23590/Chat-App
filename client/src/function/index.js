@@ -20,5 +20,5 @@ export const TIMEAGO = (timestamp) => {
     const minutes = Math.floor(diffInSeconds / 60);
     if (minutes > 0) return `${minutes} phút`;
 
-    return "Đang hoạt động";
+    return "1 phút";
   };

@@ -7,10 +7,10 @@ export default function Home() {
   return (
     <>
       <Grid2 container padding={1}>
-        <Grid2 item height={"98vh"} size={0.4} border={1}>
+        <Grid2 height={"98vh"} size={0.4} border={1}>
           <ChatBar />
         </Grid2>
-        <Grid2 item height={"98vh"} size={11.6} border={1}>
+        <Grid2 height={"98vh"} size={11.6} border={1}>
           <Outlet />
         </Grid2>
       </Grid2>

@@ -8,3 +8,16 @@ export const APICreateUser = async (formData) => {
     const {createUser} = await GraphQLrequest({query, variables: formData});
     return createUser;
 };
+
+export const APISearchUser = async (name) => {
+  const query = `query SearchUser($name: String) {
+  searchUser(name: $name) {
+    id
+    name
+    photoURL
+    uid
+  }
+}`;
+  const {searchUser} = await GraphQLrequest({query, variables: {name}});
+  return searchUser;
+};

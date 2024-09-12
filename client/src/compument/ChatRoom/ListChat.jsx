@@ -1,120 +1,100 @@
 import { Avatar, Box, Grid2, List, TextField, Typography } from "@mui/material";
-import React from "react";
-import { TIMEAGO } from './../../function/index';
+import React, { useContext, useEffect, useState } from "react";
+import { TIMEAGO } from "./../../function/index";
+import AddIcon from '@mui/icons-material/Add';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import { APIGetRoom } from "../../utils/RoomUtil";
+import { AuthContext } from './../../context/AuthProvider';
+import { Outlet, useNavigate } from "react-router-dom";
 
 export default function ListChat() {
-  const data = [
-    {
-      id: "1",
-      listUser: [
-        {
-          id: "1",
-          name: "Nguyễn Văn A",
-          photoURL: "https://material-ui.com/static/images/avatar/1.jpg",
-          status: "online",
-        },
-      ],
-      LastMessage: {
-        id: "1",
-        content: "Chào bạn",
-        time: "1726063948000",
-        type: "text",
-        sender: "1",
-        receiver: ["2"],
-        seen: ["2"],
-      },
-    },
-    {
-      id: "2",
-      listUser: [
-        {
-          id: "1",
-          name: "Nguyễn Văn A",
-          photoURL: "https://material-ui.com/static/images/avatar/1.jpg",
-          status: "online",
-        },
-        {
-          id: "1",
-          name: "Nguyễn Văn A",
-          photoURL: "https://material-ui.com/static/images/avatar/1.jpg",
-          status: "online",
-        },
-      ],
-      LastMessage: {
-        id: "1",
-        content: "Chào bạn",
-        time: "1726063948000",
-        type: "text",
-        sender: "1",
-        receiver: ["2"],
-        seen: ["2"],
-      },
-    },
-    {
-      id: "3",
-      listUser: [
-        {
-          id: "1",
-          name: "Nguyễn Văn A",
-          photoURL: "https://material-ui.com/static/images/avatar/1.jpg",
-          status: "online",
-        },
-      ],
-      LastMessage: {
-        id: "1",
-        content: "Chào bạn",
-        time: "1726063948000",
-        type: "text",
-        sender: "1",
-        receiver: ["2"],
-        seen: ["2"],
-      },
-    },
-  ];
+  const [rooms, setRooms] = useState([]);
+  const { user } = useContext(AuthContext);
+  const currentUid = user?.uid;
+  const navigate = useNavigate();
+  const fetchRoom = async () => {
+    const res = await APIGetRoom(user?.uid);
+    setRooms(res);
+  };
+  useEffect(() => {
+    if (user.uid) {
+      fetchRoom();
+    }
+  }, [user?.uid]);
   return (
     <Grid2 container>
-      <Grid2 item size={3} borderRight={1} height={"98vh"} p={2}>
+      <Grid2 size={3} borderRight={1} height={"98vh"} p={2}>
+        <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
         <Typography variant="h5" fontWeight={"600"}>
           Đoạn chat
         </Typography>
+        <AddIcon fontSize="large" sx={{
+          width: 40, height: 40, backgroundColor: 'grey.200',
+          padding: 1, borderRadius: '50%',
+          ':hover':{
+          backgroundColor: 'grey.100'
+        }}} 
+        onClick={() => navigate('/ListChat/newChat')}
+        />
+        </Box>
         <TextField
           fullWidth
           variant="outlined"
           size="small"
           placeholder="Tìm kiếm"
-          sx={{ marginY: 1 }}
+          sx={{ marginY: 2 }}
         />
-        {data.map((item, index) => (
+        <Box sx={{height: '89%', overflowY: 'scroll'}}>
+        { rooms && rooms.map((item, index) => (
           <Box
             key={index}
-            sx={{ borderBottom: 1, borderColor: "grey.300", paddingY: 1 }}
+            sx={{ borderBottom: 1, borderColor: "grey.300", paddingY: 1,cursor: 'pointer' , ':hover':{
+              backgroundColor: 'grey.100'
+            } }}
           >
-            <Grid2 container>
-              <Grid2 size={2}>
-                {item.listUser.map((user, index) => (
-                  <Avatar
-                    src={user.photoURL}
-                    sx={{ width: "70%", height: "70%" }}
-                  />
-                ))}
+            <Grid2 container sx={{
+              '&:hover .more-icon': {
+                opacity: 1,
+              },
+            }}>
+              <Grid2 size={2} sx={{display: 'flex',justifyContent: 'center', alignItems: 'center'}}>
+                <Avatar src={item.photoURL} />
               </Grid2>
-              <Grid2 size={9}>
-              <Typography variant="h6" fontWeight={"600"}>
-                {item.listUser.map((user, index) => (
-                  <span key={index}>
-                    {user.name}
-                    {index < item.listUser.length - 1 && ", "}
-                  </span>
-                ))}
-              </Typography>
-              <Typography>{TIMEAGO(item.LastMessage.time)}</Typography>
-              <Typography variant="body2" color="grey">
-                {item.LastMessage.content}
-              </Typography>
+              <Grid2 size={8.5}>
+                <Typography fontSize={'1.0rem'} fontWeight={"600"} noWrap>
+                  {item.name ?? item.listUser.map((user, index) => (
+                    <span key={index}>
+                      {user?.uid === currentUid ? "" : user?.name}
+                    </span>
+                  ))}
+                </Typography>
+                <Box sx={{ display: "flex" }}>
+                  <Typography noWrap>
+                    {item.LastMessage?.content} • 
+                  </Typography>
+                  <Typography sx={{ whiteSpace: "nowrap", ml: 1 }}>
+                    {TIMEAGO(item?.LastMessage?.createdAt)}
+                  </Typography>
+                </Box>
+              
+              </Grid2>
+              <Grid2 size={1} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                  <MoreHorizIcon sx={{
+                    width: 35, height: 35, 
+                    padding: 1, borderRadius: '50%',
+                    opacity: 0,
+                    marginLeft: 2,
+                    backgroundColor: 'white',
+                    border: '1px solid grey',
+                  }} className="more-icon" />
               </Grid2>
             </Grid2>
           </Box>
         ))}
+        </Box>
+      </Grid2>
+      <Grid2 size={9}>
+        <Outlet />
       </Grid2>
     </Grid2>
   );

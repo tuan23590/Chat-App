@@ -1,34 +1,36 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import TextsmsIcon from "@mui/icons-material/Textsms";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
 import TocIcon from "@mui/icons-material/Toc";
-import { Box, Typography } from "@mui/material";
-import UserMenu from "./../UserMenu";
+import { Avatar, Box, Typography } from "@mui/material";
 import HtmlTooltip from './../HtmlTooltip';
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthProvider";
 
 export default function ChatBar() {
+  const {user:{photoURL}} = useContext(AuthContext);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const navigate = useNavigate();
+  const path = useLocation().pathname.split("/")[2];
   const chatBarItems = [
     {
       id: 0,
       icon: <ChatBubbleIcon />,
       text: "Chat",
-      path: "/ListChat",
+      path: "/ListChat/"+path,
     },
     {
       id: 1,
       icon: <TextsmsIcon />,
       text: "Tin nhắn chờ",
-      path: "/Pending",
+      path: "/Pending/"+path,
     },
     {
       id: 2,
       icon: <Inventory2Icon />,
       text: "Lưu trữ",
-      path: "/Archive",
+      path: "/Archive/"+path,
     },
   ];
   return (
@@ -78,7 +80,14 @@ export default function ChatBar() {
         ))}
       </Box>
       <Box>
-        <UserMenu />
+        <Box sx={{display: 'flex',justifyContent: 'center',cursor: "pointer", opacity: 0.7, ':hover':{
+          backgroundColor: "#f5f5f5",
+          borderRadius: "10px",
+          
+          opacity: 1
+        }}}>
+        <Avatar sx={{ width: 40, height: 40 }} src={photoURL} />
+        </Box>
         <Box
           py={1.5}
           sx={{
