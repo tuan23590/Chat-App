@@ -14,6 +14,10 @@ const childrenChat = (parentName) => {
       element: <ChatWindows />,
       path: `${parentName}/newChat`,
     },
+    {
+      element: <ChatWindows />,
+      path: `${parentName}/:id`,
+    },
   ];
 }
 

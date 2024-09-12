@@ -1,12 +1,19 @@
 import { Box, TextField } from "@mui/material";
 import React, { useState } from "react";
 import SendIcon from '@mui/icons-material/Send';
+import { APICreateMessage } from "../../utils/MessageUtils";
 
-export default function ChatInput({ messages, setMessages,createRoom }) {
+export default function ChatInput({ messages, setMessages,createRoom, uid, roomId }) {
   const [message, setMessage] = useState("");
-
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (message.trim() === "") return;
+    const formData = {
+      content: message,
+      type: "text",
+      sender: uid,
+      roomId: roomId
+    }
+    await APICreateMessage(formData);
     setMessages([...messages, { content: message, sender: "JinhwkRuGYQr0sqPyEy62z7hAZA2",id: messages.length + 1 }]);
     setMessage("");
   }

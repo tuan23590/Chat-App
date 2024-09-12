@@ -56,7 +56,9 @@ export default function ListChat() {
               '&:hover .more-icon': {
                 opacity: 1,
               },
-            }}>
+            }}
+            onClick={() => navigate(`./${item.id}`)}  
+            >
               <Grid2 size={2} sx={{display: 'flex',justifyContent: 'center', alignItems: 'center'}}>
                 <Avatar src={item.photoURL} />
               </Grid2>

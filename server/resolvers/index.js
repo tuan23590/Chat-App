@@ -12,7 +12,11 @@ export const resolvers = {
     searchUser: async (parent, args) => {
       const users = await UserModel.find({ name: { $regex: args.name, $options: "i" } });
       return users;
-    }
+    },
+    getMessages: async (parent, args) => {
+      const messages = await MessageModel.find({ $or: [{ sender: args.uid }, { receiver: args.uid }] });
+      return messages;
+    },
   },
   Room: {
     listUser: async (parent) => {
@@ -26,6 +30,20 @@ export const resolvers = {
     LastMessage: async (parent) => {
       const messages = await MessageModel.find({ _id: { $in: parent.listMessage } });
       return messages[messages.length - 1];
+    },
+  },
+  Message: {
+    sender: async (parent) => {
+      const user = await UserModel.findOne({ uid: parent.sender });
+      return user;
+    },
+    receiver: async (parent) => {
+      const user = await UserModel.findOne({ uid: parent.receiver });
+      return user;
+    },
+    seen: async (parent) => {
+      const user = await UserModel.findOne({ uid: parent.seen });
+      return user;
     },
   },
   Mutation: {
@@ -55,6 +73,15 @@ export const resolvers = {
       newRoom.listMessage = listIdMessage;
       await newRoom.save();
       return newRoom;
+    },
+    createMessage: async (parent, args) => {
+      const room = await RoomModel.findOne({ _id: args.roomId });
+      const newMessage = new MessageModel(args);
+      newMessage.receiver = room.listUser.filter((user) => user !== args.sender);
+      room.listMessage.push(newMessage._id);
+      await room.save();
+      await newMessage.save();
+      return newMessage;
     },
   },
   Subscription: {},

@@ -31,7 +31,7 @@ export default function ChatContent({ messages,setMessages }) {
           key={index}
           sx={{
             display: "flex",
-            justifyContent: message.sender === uid ? "flex-end" : "flex-start",
+            justifyContent: message.sender.uid === uid ? "flex-end" : "flex-start",
             alignItems: "center",
             marginY: 0.2,
             "&:hover .more-icon": {
@@ -40,15 +40,15 @@ export default function ChatContent({ messages,setMessages }) {
           }}
         >
           <Box sx={{ width: 25, height: 25, marginX: 1 }}>
-            {message.sender == uid ||
-            message.sender == messages[index + 1]?.sender ? null : (
+            {message.sender.uid == uid ||
+            message.sender.uid == messages[index + 1]?.sender.uid ? null : (
               <Avatar
-                src={message.sender.photoURL}
+                src={message.sender.uid.photoURL}
                 sx={{ width: "100%", height: "100%" }}
               />
             )}
           </Box>
-          {message.sender == uid && (<MoreHorizIcon
+          {message.sender.uid == uid && (<MoreHorizIcon
             className="more-icon"
             cursor="pointer"
             sx={{
@@ -70,31 +70,31 @@ export default function ChatContent({ messages,setMessages }) {
               paddingY: 1,
               paddingX: 2,
               borderRadius:
-                message.sender == uid
-                  ? message.sender !== messages[index + 1]?.sender
-                    ? message.sender !== messages[index - 1]?.sender
+                message.sender.uid == uid
+                  ? message.sender.uid !== messages[index + 1]?.sender.uid
+                    ? message.sender.uid !== messages[index - 1]?.sender.uid
                       ? "30px 30px 30px 30px"
                       : "30px 0px 30px 30px"
-                    : message.sender !== messages[index - 1]?.sender ||
-                      message.sender !== messages[index + 1]?.sender
+                    : message.sender.uid !== messages[index - 1]?.sender.uid ||
+                      message.sender.uid !== messages[index + 1]?.sender.uid
                     ? "30px 30px 0px 30px"
                     : "30px 0px 0px 30px"
-                  : message.sender === messages[index + 1]?.sender
-                  ? message.sender === messages[index - 1]?.sender
+                  : message.sender.uid === messages[index + 1]?.sender.uid
+                  ? message.sender.uid === messages[index - 1]?.sender.uid
                     ? "0px 30px 30px 0px"
                     : "30px 30px 30px 0px"
-                  : message.sender === messages[index - 1]?.sender ||
-                    message.sender === messages[index + 1]?.sender
+                  : message.sender.uid === messages[index - 1]?.sender.uid ||
+                    message.sender.uid === messages[index + 1]?.sender.uid
                   ? "0px 30px 30px 30px"
                   : "30px 30px 30px 30px",
               backgroundColor:
-                message.sender === uid ? "primary.main" : "grey.300",
-              color: message.sender === uid ? "white" : "black",
+                message.sender.uid === uid ? "primary.main" : "grey.300",
+              color: message.sender.uid === uid ? "white" : "black",
             }}
           >
             <Typography variant="body1">{message.content}</Typography>
           </Box>
-          {message.sender !== uid && (<MoreHorizIcon
+          {message.sender.uid !== uid && (<MoreHorizIcon
             className="more-icon"
             cursor="pointer"
             sx={{

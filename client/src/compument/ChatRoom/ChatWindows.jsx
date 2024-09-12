@@ -5,8 +5,11 @@ import ChatInput from './ChatInput';
 import ChatContent from './ChatContent';
 import { AuthContext } from '../../context/AuthProvider';
 import { APICreateRoom } from './../../utils/RoomUtil';
+import { APIGetMessages } from '../../utils/MessageUtils';
+import { useLocation } from 'react-router-dom';
 
 export default function ChatWindows() {
+  const roomId = useLocation().pathname.split('/')[2];
   const [selectedUser, setSelectedUser] = useState([]);
   const [messages, setMessages] = useState([]);
   const {user} = useContext(AuthContext);
@@ -30,6 +33,14 @@ export default function ChatWindows() {
     const chatContent = document.getElementById("chat-content");
     chatContent.scrollTop = chatContent.scrollHeight;
   }, [messages]);
+
+  const fetchMessages = async () => {
+    const res = await APIGetMessages(user.uid);
+    setMessages(res);
+  }
+  useEffect(() => {
+    fetchMessages();
+  }, [user.uid]);
   return (
     <Box height={'99.8%'} sx={{display: 'flex',flexDirection: 'column',}}>
       <Box>
@@ -40,7 +51,7 @@ export default function ChatWindows() {
         <ChatContent messages={messages} setMessages={setMessages}/>
       </Box>
       <Box>
-        <ChatInput messages={messages} setMessages={setMessages}/>
+        <ChatInput messages={messages} setMessages={setMessages} uid={user?.uid} roomId={roomId}/>
       </Box>
     </Box>
   )
