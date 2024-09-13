@@ -11,6 +11,7 @@ export default function Header({selectedUser, setSelectedUser}) {
       setListUser(res.filter(user => !selectedUser.find(u => u.id === user.id)));
     }
     if(search) fetchUser();
+    else setListUser([]);
   }, [search])
   return (
     <Box sx={{display: 'flex', alignItems: 'center'}} m={2}>

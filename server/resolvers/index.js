@@ -57,6 +57,7 @@ export const resolvers = {
         return user;
       }
       const newUser = new UserModel(args);
+      newUser.name = args.name || 'user@' + args.uid;
       await newUser.save();
       return newUser;
     },

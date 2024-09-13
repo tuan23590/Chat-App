@@ -66,7 +66,7 @@ export default function ChatWindows() {
                 {dataRoom?.name || (dataRoom?.listUser.find((u) => u.uid !== user.uid)?.name)}
               </Typography>
               <Typography>
-                {dataRoom?.listUser[1].status || "Đang hoạt động"}
+                {dataRoom?.listUser[1]?.status || "Đang hoạt động"}
               </Typography>
             </Box>
           </Box>

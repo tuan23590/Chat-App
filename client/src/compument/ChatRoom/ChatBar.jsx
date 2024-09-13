@@ -7,6 +7,7 @@ import { Avatar, Box, Typography } from "@mui/material";
 import HtmlTooltip from './../HtmlTooltip';
 import { useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthProvider";
+import UserMenu from './../UserMenu';
 
 export default function ChatBar() {
   const {user:{photoURL}} = useContext(AuthContext);
@@ -83,10 +84,9 @@ export default function ChatBar() {
         <Box sx={{display: 'flex',justifyContent: 'center',cursor: "pointer", opacity: 0.7, ':hover':{
           backgroundColor: "#f5f5f5",
           borderRadius: "10px",
-          
           opacity: 1
         }}}>
-        <Avatar sx={{ width: 40, height: 40 }} src={photoURL} />
+        <UserMenu/>
         </Box>
         <Box
           py={1.5}

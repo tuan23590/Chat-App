@@ -5,7 +5,7 @@ import { Avatar, Box, Menu, MenuItem, Typography } from "@mui/material";
 
 export default function UserMenu() {
   const {
-    user: { displayName, photoURL, auth },
+    user: { displayName, photoURL, auth,email },
   } = useContext(AuthContext);
   const [anchorEl, setAnchorEl] = useState(false);
   const navigate = useNavigate();
@@ -29,23 +29,19 @@ export default function UserMenu() {
           justifyContent: "center",
           paddingY: 2,
           cursor: "pointer",
-          ":hover": {
-            backgroundColor: "rgba(0,0,0,0.1)",
-            borderRadius: "5px",
-            transition: "0.5s",
-          },
         }}
         onClick={handleOpen}
       >
         <Avatar
           alt="Avatar"
           src={photoURL}
-          sx={{ width: "25px", height: "25px", marginRight: "5px" }}
+          sx={{ width: "35px", height: "35px", marginRight: "5px" }}
         />
       </Box>
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose} sx={{
         
       }}>
+        <MenuItem disabled>{displayName || email}</MenuItem>
         <MenuItem onClick={handleLogout}>Logout</MenuItem>
       </Menu>
     </>
