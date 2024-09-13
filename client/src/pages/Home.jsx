@@ -2,7 +2,7 @@ import { Avatar, Box, Grid2, List, TextField, Typography } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import { useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthProvider";
 import AddRoom from './../compument/ChatRoom/AddRoom';
 import { TIMEAGO } from './../function/index';
@@ -155,7 +155,7 @@ export default function Home() {
         </Box>
       </Grid2>
       <Grid2 size={9}>
-        {selectedUser.length > 0 && <ChatWindows selectedUser={selectedUser} />}
+        {selectedUser.length > 0 ? <ChatWindows selectedUser={selectedUser} setSelectedUser={setSelectedUser} />: <Outlet />}
       </Grid2>
     </Grid2>
     </>

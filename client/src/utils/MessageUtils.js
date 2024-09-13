@@ -62,6 +62,24 @@ export const APICreateMessage = async (formData) => {
   const query = `mutation CreateMessage($content: String, $type: String, $sender: String, $roomId: String) {
   createMessage(content: $content, type: $type, sender: $sender, roomId: $roomId) {
     id
+    type
+    sender {
+      id
+      uid
+      name
+      email
+      role
+      photoURL
+      status
+    }
+    seen {
+      uid
+    }
+    receiver {
+      uid
+    }
+    createdAt
+    content
   }
 }`;
   const {createMessage} = await GraphQLrequest({query, variables: formData});

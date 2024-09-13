@@ -17,6 +17,7 @@ export default function ChatInput({message,setMessage,handleSendMessage}) {
         size="small"
         fullWidth
         multiline
+        autoFocus 
         maxRows={5}
         InputProps={{
           sx: {

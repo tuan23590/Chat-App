@@ -68,16 +68,18 @@ export const resolvers = {
     createRoom: async (parent, args) => {
       try {
       const newMessage = new MessageModel(JSON.parse(args.messages));
+      newMessage.receiver = args.uid;
       await newMessage.save();
       const room = await RoomModel.findOne({ listUser: args.uid });
       if (room) {
-        room.listMessage.push(...newMessage.id);
+        room.listMessage.push(newMessage.id);
         await room.save();
         return room;
       }
       const newRoom = new RoomModel(args);
       newRoom.listUser = args.uid;
       newRoom.listMessage.push(newMessage._id);
+      newRoom.name = args.uid.length > 2 ? 'Group Chat @' + args.uid.join(', ') : '';
       await newRoom.save();
       return newRoom;
       } catch (error) {
