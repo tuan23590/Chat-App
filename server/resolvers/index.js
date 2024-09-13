@@ -1,5 +1,6 @@
 import { MessageModel, RoomModel, UserModel } from "../models/index.js";
 import { PubSub } from 'graphql-subscriptions';
+import { withFilter } from 'graphql-subscriptions';
 
 const pubsub = new PubSub();
 
@@ -53,6 +54,10 @@ export const resolvers = {
       const user = await UserModel.findOne({ uid: parent.seen });
       return user;
     },
+    room: async (parent) => {
+      const room = await RoomModel.findOne({ _id: parent.room });
+      return room;
+    }
   },
   Mutation: {
     createUser: async (parent, args) => {
@@ -74,13 +79,19 @@ export const resolvers = {
       if (room) {
         room.listMessage.push(newMessage.id);
         await room.save();
+        newMessage.room = room._id;
+        await newMessage.save();
+        pubsub.publish('NEW_MESSAGE', { newMessage });
         return room;
       }
       const newRoom = new RoomModel(args);
       newRoom.listUser = args.uid;
       newRoom.listMessage.push(newMessage._id);
       newRoom.name = args.uid.length > 2 ? 'Group Chat @' + args.uid.join(', ') : '';
+      newMessage.room = newRoom._id;
+      await newMessage.save();
       await newRoom.save();
+      pubsub.publish('NEW_MESSAGE', { newMessage });
       return newRoom;
       } catch (error) {
         console.log(error);
@@ -90,6 +101,7 @@ export const resolvers = {
       const room = await RoomModel.findOne({ _id: args.roomId });
       const newMessage = new MessageModel(args);
       newMessage.receiver = room.listUser.filter((user) => user !== args.sender);
+      newMessage.room = args.roomId;
       room.listMessage.push(newMessage._id);
       await room.save();
       await newMessage.save();
@@ -99,7 +111,12 @@ export const resolvers = {
   },
   Subscription: {
     newMessage: {
-      subscribe: () => pubsub.asyncIterator(['NEW_MESSAGE'])
+      subscribe: withFilter(
+        () => pubsub.asyncIterator('NEW_MESSAGE'),
+        (payload, variables) => {
+          return payload.newMessage.receiver.includes(variables.subscriber);
+        },
+      ),
   },
 }
 };

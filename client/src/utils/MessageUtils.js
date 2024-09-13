@@ -1,10 +1,10 @@
 import { GraphQLrequest } from './request';
 import { gql, useSubscription } from '@apollo/client';
 
-export const APINewMessage = () => {
+export const APINewMessage = (subscriber) => {
   const { data, loading, error } = useSubscription(gql`
-    subscription NewMessage {
-  newMessage {
+    subscription NewMessage($subscriber: String) {
+  newMessage(subscriber: $subscriber) {
     id
     content
     type
@@ -17,10 +17,13 @@ export const APINewMessage = () => {
       photoURL
       status
     }
+      room {
+      id
+      }
     createdAt
   }
 }
-  `);
+  `, {variables: {subscriber}});
   return { data, loading, error };
 };
 

@@ -13,7 +13,7 @@ export default function ChatWindows({ setSelectedUser, selectedUser }) {
   const [message, setMessage] = useState("");
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
-  const {data} = APINewMessage();
+  const {data} = APINewMessage(user.uid);
   const createRoom = async () => {
     const formData = {
       message: {
@@ -60,12 +60,16 @@ export default function ChatWindows({ setSelectedUser, selectedUser }) {
     }
   }, [dataRoom]);
   useEffect(() => {
-    if (data) {
+    if (data && data.newMessage?.room?.id === dataRoom?.id) {
       setListMessage([...listMessage, data.newMessage]);
     }
   }, [data]);
+  useEffect(() => {
+    const chatContent = document.getElementById("chat-content");
+    chatContent.scrollTop = chatContent.scrollHeight;
+  }, [listMessage]);
   return (
-    <Box height={"99.8%"} sx={{ display: "flex", flexDirection: "column" }}>
+    <Box height={"100vh"} sx={{ display: "flex", flexDirection: "column" }}>
       <Box sx={{ padding: 2 }}>
         {selectedUser ? (
           <Typography variant="h6" fontWeight={"600"}>
@@ -83,14 +87,14 @@ export default function ChatWindows({ setSelectedUser, selectedUser }) {
       <Box
         id="chat-content"
         border={1}
-        sx={{ flexGrow: 1, overflowY: "scroll", height: 2 }}
+        sx={{ flexGrow: 1, overflowY: "scroll", minHeight: 2 }}
       >
         <ChatContent
           listMessage={listMessage}
           setListMessage={setListMessage}
         />
       </Box>
-      <Box>
+      <Box sx={{flexShrink: 0}}>
         <ChatInput
           setMessage={setMessage}
           handleSendMessage={handleSendMessage}
@@ -100,3 +104,20 @@ export default function ChatWindows({ setSelectedUser, selectedUser }) {
     </Box>
   );
 }
+
+
+// import { Box } from '@mui/material'
+// import React from 'react'
+
+// export default function ChatWindows() {
+//   return (
+//     <Box id='box-0' sx={{height: '900px', display: "flex", flexDirection: "column", border: 3}}>
+//     <Box id='box-1' sx={{height: '200px'}}>1</Box>
+//     <Box id='box-2' sx={{border: 1, flexGrow: 1, overflowY: 'scroll'}}>
+//       <Box id='box-2-1' sx={{height: '900px'}}>2-1</Box>
+//       <Box id='box-2-2' sx={{height: '200px'}}>2-2</Box>
+//     </Box>
+//     <Box id='box-3' sx={{minHeight: '200px', flexShrink: 0}}>3</Box>
+//   </Box>  
+//   )
+// }

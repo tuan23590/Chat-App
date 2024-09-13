@@ -16,6 +16,7 @@ type Message {
     receiver: [User]
     seen: [User]
     createdAt: String
+    room: Room
 }
 type Room {
     id: String
@@ -38,6 +39,6 @@ type Mutation {
     createMessage(content: String, type: String, sender: String, roomId:String): Message,
 }
 type Subscription {
-    newMessage: Message
+    newMessage(subscriber: String): Message
 }
 `;

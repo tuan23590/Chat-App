@@ -9,6 +9,8 @@ import { TIMEAGO } from './../function/index';
 import ChatWindows from "../compument/ChatRoom/ChatWindows";
 import UserMenu from './../compument/UserMenu';
 import { APIGetListRoom } from "../utils/RoomUtil";
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 export default function Home() {
   const [rooms, setRooms] = useState([]);
@@ -17,6 +19,7 @@ export default function Home() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState([]);
+  const [openRoom, setOpenRoom] = useState(false);
 
   const fetchRoom = async () => {
     const res = await APIGetListRoom(user?.uid);
@@ -28,10 +31,35 @@ export default function Home() {
       fetchRoom();
     }
   }, [user?.uid]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 1000) {
+        setOpenRoom(false);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    handleResize();
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+  
   return (
     <>
-    <Grid2 container>
-      <Grid2 size={3} borderRight={1} height={"100vh"} p={2}>
+    <Grid2 container sx={{
+      position: 'relative'
+    }}>
+      
+      <Grid2 size={3} borderRight={1} height={"100vh"} p={2} minWidth={'250px'} sx={{
+        '@media (max-width: 1000px)': {
+          position: 'absolute',
+          display: openRoom ? 'block' : 'none',
+        },
+        backgroundColor: 'white',
+        zIndex: 1,
+      }}>
+        
         <Box sx={{display: 'flex', flexDirection: 'column'}}>
         <Box
           sx={{
@@ -154,10 +182,36 @@ export default function Home() {
         </Box>
         </Box>
       </Grid2>
-      <Grid2 size={9}>
+      <Grid2 size={9} sx={{
+        minWidth: '300px',
+        '@media (max-width: 1000px)': {
+          width: '100%'
+        }
+      }}>
         {selectedUser.length > 0 ? <ChatWindows selectedUser={selectedUser} setSelectedUser={setSelectedUser} />: <Outlet />}
       </Grid2>
     </Grid2>
+    <Box sx={{
+        bottom: '10vh',
+        zIndex: 1,
+        position: 'fixed',
+        '@media (min-width: 1000px)': {
+          // display: 'none',
+        },
+        
+      }}
+      onClick={() => setOpenRoom(!openRoom)}
+      > 
+        <ArrowForwardIosIcon fontSize="large" sx={{
+          borderRadius: '50%',
+          padding: '5px',
+          cursor: 'pointer',
+          display: 'none',
+          '@media (max-width: 1000px)': {
+            display:'block',
+          },
+        }} />
+        </Box>
     </>
   );
 }

@@ -16,6 +16,9 @@ const MessageSchema = new mongoose.Schema({
     seen: {
         type: [String],
     },
+    room: {
+        type: String,
+    }
 },{timestamps: true});
 
 const MessageModel = mongoose.model('Message',MessageSchema);
