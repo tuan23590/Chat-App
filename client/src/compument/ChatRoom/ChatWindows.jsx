@@ -5,24 +5,18 @@ import ChatContent from "./ChatContent";
 import { AuthContext } from "../../context/AuthProvider";
 import { useLoaderData, useLocation } from "react-router-dom";
 
-export default function ChatWindows() {
+export default function ChatWindows({selectedUser}) {
   const dataRoom = useLoaderData();
-  const roomId = useLocation().pathname.split("/")[2];
-  const [selectedUser, setSelectedUser] = useState([]);
-  const [messages, setMessages] = useState([]);
+  const [listMessage, setListMessage] = useState([]);
+  const [message, setMessage] = useState("");
   const { user } = useContext(AuthContext);
 
-  useEffect(() => {
-    setMessages([]);
-    setSelectedUser([]);
-  }, [roomId]);
-  useEffect(() => {
-    const chatContent = document.getElementById("chat-content");
-    chatContent.scrollTop = chatContent.scrollHeight;
-  }, [messages]);
+  const handleSendMessage = () => {
+    console.log("send message");
+  }
   useEffect(() => {
     if (dataRoom) {
-      setMessages(dataRoom.listMessage || []);
+      setListMessage(dataRoom.listMessage);
     }
   }, [dataRoom]);
   return (
@@ -58,15 +52,13 @@ export default function ChatWindows() {
         border={1}
         sx={{ flexGrow: 1, overflowY: "scroll", height: 2 }}
       >
-        <ChatContent messages={messages} setMessages={setMessages} />
+        <ChatContent listMessage={listMessage} />
       </Box>
       <Box>
         <ChatInput
-          messages={messages}
-          setMessages={setMessages}
-          uid={user?.uid}
-          roomId={roomId}
-          selectedUser={selectedUser}
+        setMessage = {setMessage}
+        handleSendMessage = {handleSendMessage}
+        message = {message}
         />
       </Box>
     </Box>

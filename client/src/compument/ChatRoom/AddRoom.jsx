@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { Autocomplete, Box, Dialog, TextField, Typography } from '@mui/material';
 import { APISearchUser } from '../../utils/UserUtil';
 
-export default function AddRoom() {
-  const [selectedUser, setSelectedUser] = useState([]);
+export default function AddRoom({selectedUser, setSelectedUser}) {
+  
   const [listUser, setListUser] = useState([]);
   const [search, setSearch] = useState('');
 

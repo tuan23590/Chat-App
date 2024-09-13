@@ -4,21 +4,7 @@ import Login from "./../pages/Login";
 import AuthProvider from './../context/AuthProvider';
 import ProtectedRoute from "./ProtectedRoute";
 import ErrorPage from "../pages/ErrorPage";
-import ListChat from './../compument/ChatRoom/ListChat';
-import Pending from './../compument/ChatRoom/Pending';
-import ChatWindows from "../compument/ChatRoom/ChatWindows";
-import { APIGetRoom } from "../utils/RoomUtil";
 import SubscriptionProvider from './../context/SubscriptionProvider';
-
-const childrenChat = (parentName) => {
-  return [
-    {
-      element: <ChatWindows />,
-      path: `${parentName}/:roomId`,
-      loader: APIGetRoom,
-    },
-  ];
-}
 
 const AuthLayout = () => {
   return (
@@ -45,18 +31,6 @@ export default createBrowserRouter([
           {
             element: <Home />,
             path: "/",
-            children: [
-              {
-                element: <ListChat />,
-                path: "/ListChat",
-                children: childrenChat("/ListChat")
-              },
-              {
-                element: <Pending />,
-                path: "/Pending",
-                children: childrenChat("/Pending")
-              },
-            ],
           },
         ],
       }

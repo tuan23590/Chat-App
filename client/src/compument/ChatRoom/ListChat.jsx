@@ -7,6 +7,7 @@ import { APIGetListRoom } from "../../utils/RoomUtil";
 import { AuthContext } from "./../../context/AuthProvider";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import AddRoom from "./AddRoom";
+import ChatWindows from "./ChatWindows";
 
 export default function ListChat() {
   const [rooms, setRooms] = useState([]);
@@ -15,6 +16,7 @@ export default function ListChat() {
   const currentUid = user?.uid;
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState([]);
 
   const fetchRoom = async () => {
     const res = await APIGetListRoom(user?.uid);
@@ -29,16 +31,18 @@ export default function ListChat() {
   return (
     <>
     <Grid2 container>
-      <Grid2 size={3} borderRight={1} height={"98vh"} p={2}>
+      <Grid2 size={3} borderRight={1} height={"100vh"} p={2}>
+        <Box sx={{display: 'flex', flexDirection: 'column'}}>
         <Box
           sx={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            marginBottom: 2,
           }}
         >
           <Typography variant="h5" fontWeight={"600"}>
-            Đoạn chat
+            Chat App
           </Typography>
           <AddIcon
             fontSize="large"
@@ -55,7 +59,7 @@ export default function ListChat() {
             onClick={() => setOpen(!open)}
           />
         </Box>
-        {open && <AddRoom/>}
+        {open && <AddRoom selectedUser={selectedUser} setSelectedUser={setSelectedUser} />}
         <TextField
           fullWidth
           variant="outlined"
@@ -142,9 +146,10 @@ export default function ListChat() {
               </Box>
             ))}
         </Box>
+        </Box>
       </Grid2>
       <Grid2 size={9}>
-        <Outlet />
+        <ChatWindows selectedUser={selectedUser} />
       </Grid2>
     </Grid2>
     </>

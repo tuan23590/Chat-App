@@ -3,15 +3,15 @@ import React, { useContext, useState } from "react";
 import { AuthContext } from "./../../context/AuthProvider";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 
-export default function ChatContent({ messages,setMessages }) {
+export default function ChatContent({ listMessage }) {
   const [anchorEl, setAnchorEl] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
   const {
     user: { uid },
   } = useContext(AuthContext);
   const handleDeleteMessage = () => {
-    setMessages(messages.filter((message) => message.id !== selectedMessage.id));
-    handleClose();
+    // setMessages(listMessage.filter((message) => message.id !== selectedMessage.id));
+    // handleClose();
   }
   const handleClose = () => {
     setAnchorEl(false);
@@ -26,7 +26,7 @@ export default function ChatContent({ messages,setMessages }) {
         paddingY: 2,
       }}
     >
-      {messages.map((message, index) => (
+      {listMessage.map((message, index) => (
         <Box
           key={index}
           sx={{
@@ -41,7 +41,7 @@ export default function ChatContent({ messages,setMessages }) {
         >
           <Box sx={{ width: 25, height: 25, marginX: 1 }}>
             {message.sender.uid == uid ||
-            message.sender.uid == messages[index + 1]?.sender.uid ? null : (
+            message.sender.uid == listMessage[index + 1]?.sender.uid ? null : (
               <Avatar
                 src={message.sender.uid.photoURL}
                 sx={{ width: "100%", height: "100%" }}
@@ -62,7 +62,7 @@ export default function ChatContent({ messages,setMessages }) {
                 backgroundColor: "grey.300",
               },
             }}
-            onClick={(e) => { setAnchorEl(e.currentTarget); setSelectedMessage(message) }}
+            onClick={(e) => {}}
           />)}
           <Box
             sx={{
@@ -71,20 +71,20 @@ export default function ChatContent({ messages,setMessages }) {
               paddingX: 2,
               borderRadius:
                 message.sender.uid == uid
-                  ? message.sender.uid !== messages[index + 1]?.sender.uid
-                    ? message.sender.uid !== messages[index - 1]?.sender.uid
+                  ? message.sender.uid !== listMessage[index + 1]?.sender.uid
+                    ? message.sender.uid !== listMessage[index - 1]?.sender.uid
                       ? "30px 30px 30px 30px"
                       : "30px 0px 30px 30px"
-                    : message.sender.uid !== messages[index - 1]?.sender.uid ||
-                      message.sender.uid !== messages[index + 1]?.sender.uid
+                    : message.sender.uid !== listMessage[index - 1]?.sender.uid ||
+                      message.sender.uid !== listMessage[index + 1]?.sender.uid
                     ? "30px 30px 0px 30px"
                     : "30px 0px 0px 30px"
-                  : message.sender.uid === messages[index + 1]?.sender.uid
-                  ? message.sender.uid === messages[index - 1]?.sender.uid
+                  : message.sender.uid === listMessage[index + 1]?.sender.uid
+                  ? message.sender.uid === listMessage[index - 1]?.sender.uid
                     ? "0px 30px 30px 0px"
                     : "30px 30px 30px 0px"
-                  : message.sender.uid === messages[index - 1]?.sender.uid ||
-                    message.sender.uid === messages[index + 1]?.sender.uid
+                  : message.sender.uid === listMessage[index - 1]?.sender.uid ||
+                    message.sender.uid === listMessage[index + 1]?.sender.uid
                   ? "0px 30px 30px 30px"
                   : "30px 30px 30px 30px",
               backgroundColor:
