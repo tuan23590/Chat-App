@@ -8,13 +8,10 @@ import ListChat from './../compument/ChatRoom/ListChat';
 import Pending from './../compument/ChatRoom/Pending';
 import ChatWindows from "../compument/ChatRoom/ChatWindows";
 import { APIGetRoom } from "../utils/RoomUtil";
+import SubscriptionProvider from './../context/SubscriptionProvider';
 
 const childrenChat = (parentName) => {
   return [
-    {
-      element: <ChatWindows />,
-      path: `${parentName}/newChat`,
-    },
     {
       element: <ChatWindows />,
       path: `${parentName}/:roomId`,
@@ -26,7 +23,9 @@ const childrenChat = (parentName) => {
 const AuthLayout = () => {
   return (
     <AuthProvider>
-      <Outlet />
+      <SubscriptionProvider>
+        <Outlet />
+      </SubscriptionProvider>
     </AuthProvider>
   );
 };

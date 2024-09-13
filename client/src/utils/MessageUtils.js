@@ -1,4 +1,29 @@
-import { GraphQLrequest } from "./request";
+import { GraphQLrequest } from './request';
+import { gql, useSubscription } from '@apollo/client';
+
+export const APINewMessage = () => {
+  const { data, loading, error } = useSubscription(gql`
+    subscription NewMessage {
+  newMessage {
+    id
+    content
+    type
+    sender {
+      id
+      uid
+      name
+      email
+      role
+      photoURL
+      status
+    }
+    createdAt
+  }
+}
+  `);
+  return { data, loading, error };
+};
+
 export const APIGetMessages = async (uid) => {
     const query = `query GetMessages($uid: String) {
   getMessages(uid: $uid) {

@@ -1,26 +1,54 @@
 import { Box, TextField } from "@mui/material";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import SendIcon from '@mui/icons-material/Send';
-import { APICreateMessage } from "../../utils/MessageUtils";
+import { APICreateMessage, APINewMessage } from "../../utils/MessageUtils";
+import { APICreateRoom } from "../../utils/RoomUtil";
+import { AuthContext } from './../../context/AuthProvider';
+import { useNavigate } from "react-router-dom";
 
-export default function ChatInput({ messages, setMessages, uid, roomId }) {
+export default function ChatInput({selectedUser, messages, setMessages, roomId }) {
   const [message, setMessage] = useState("");
+  const { data, loading, error } = APINewMessage();
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
+
   const handleSendMessage = async () => {
     if (message.trim() === "") return;
     const formData = {
       content: message,
       type: "text",
-      sender: uid,
+      sender: user.uid,
       roomId: roomId
     }
-    await APICreateMessage(formData);
-    setMessages([...messages, { content: message, sender: {uid},id: messages.length + 1 }]);
+    if (roomId == "newChat") {
+      createRoom(formData);
+    }else {
+      await APICreateMessage(formData);
+    }
     setMessage("");
   }
 
+  const createRoom = async (mess) => {
+    const formData = {
+      uid: [user.uid, ...selectedUser.map((user) => user.uid)],
+      messages: JSON.stringify([mess]),
+    };
+    const res = await APICreateRoom(formData);
+    if (!res) {
+      alert("Tạo phòng chat thất bại");
+    } else navigate(`/ListChat/${res.id}`);
+  };
+
+  useEffect(() => {
+    console.log(data);
+    if (data) {
+      setMessages([...messages, data.newMessage]);
+    }
+  }, [data, loading, error]);
+
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault(); // Ngăn Enter thêm dòng mới
+      e.preventDefault();
       handleSendMessage();
     }
   }

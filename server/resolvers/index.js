@@ -1,4 +1,8 @@
 import { MessageModel, RoomModel, UserModel } from "../models/index.js";
+import { PubSub } from 'graphql-subscriptions';
+
+const pubsub = new PubSub();
+
 export const resolvers = {
   Query: {
     getUser: async (parent, args) => {
@@ -63,7 +67,8 @@ export const resolvers = {
     },
     createRoom: async (parent, args) => {
       try {
-        const dataMessage = JSON.parse(args.messages);
+      const dataMessage = JSON.parse(args.messages);
+      console.log(dataMessage);
       let listIdMessage = [];
       for (let i = 0; i < dataMessage.length; i++) {
         const newMessage = new MessageModel();
@@ -94,8 +99,13 @@ export const resolvers = {
       room.listMessage.push(newMessage._id);
       await room.save();
       await newMessage.save();
+      pubsub.publish('NEW_MESSAGE', { newMessage });
       return newMessage;
     },
   },
-  Subscription: {},
+  Subscription: {
+    newMessage: {
+      subscribe: () => pubsub.asyncIterator(['NEW_MESSAGE'])
+  },
+}
 };

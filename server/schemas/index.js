@@ -38,6 +38,6 @@ type Mutation {
     createMessage(content: String, type: String, sender: String, roomId:String): Message,
 }
 type Subscription {
-        _: String
+    newMessage: Message
 }
 `;

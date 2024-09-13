@@ -6,6 +6,7 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { APIGetListRoom } from "../../utils/RoomUtil";
 import { AuthContext } from "./../../context/AuthProvider";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import AddRoom from "./AddRoom";
 
 export default function ListChat() {
   const [rooms, setRooms] = useState([]);
@@ -13,16 +14,20 @@ export default function ListChat() {
   const { user } = useContext(AuthContext);
   const currentUid = user?.uid;
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+
   const fetchRoom = async () => {
     const res = await APIGetListRoom(user?.uid);
     setRooms(res);
   };
+
   useEffect(() => {
     if (user.uid) {
       fetchRoom();
     }
   }, [user?.uid]);
   return (
+    <>
     <Grid2 container>
       <Grid2 size={3} borderRight={1} height={"98vh"} p={2}>
         <Box
@@ -47,9 +52,10 @@ export default function ListChat() {
                 backgroundColor: "grey.100",
               },
             }}
-            onClick={() => navigate("/ListChat/newChat")}
+            onClick={() => setOpen(!open)}
           />
         </Box>
+        {open && <AddRoom/>}
         <TextField
           fullWidth
           variant="outlined"
@@ -141,5 +147,6 @@ export default function ListChat() {
         <Outlet />
       </Grid2>
     </Grid2>
+    </>
   );
 }

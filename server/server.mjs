@@ -9,6 +9,10 @@ import mongoose from 'mongoose';
 import 'dotenv/config'
 import { typeDefs } from './schemas/index.js';
 import { resolvers } from './resolvers/index.js';
+import { makeExecutableSchema } from '@graphql-tools/schema';
+import { WebSocketServer } from 'ws';
+import { useServer } from 'graphql-ws/lib/use/ws';
+
 
 
 const app = experss();
@@ -18,12 +22,30 @@ const URI = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}
 ` 
 const PORT = process.env.PORT || 4000;
 
-const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-    plugins: [ApolloServerPluginDrainHttpServer({httpServer})]
-});
+const schema = makeExecutableSchema({ typeDefs, resolvers });
 
+const wsServer = new WebSocketServer({
+    server: httpServer,
+    path: '/',
+  });
+const serverCleanup = useServer({ schema }, wsServer);
+
+
+const server = new ApolloServer({
+    schema,
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer }),
+        ApolloServerPluginDrainHttpServer({ httpServer }),
+        {
+          async serverWillStart() {
+            return {
+              async drainServer() {
+                await serverCleanup.dispose();
+              },
+            };
+          },
+        },
+    ],
+});
 
 await server.start();
 

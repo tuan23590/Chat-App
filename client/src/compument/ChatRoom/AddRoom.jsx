@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { Autocomplete, Box, TextField, Typography } from '@mui/material';
+import { Autocomplete, Box, Dialog, TextField, Typography } from '@mui/material';
 import { APISearchUser } from '../../utils/UserUtil';
 
-export default function Header({selectedUser, setSelectedUser}) {
+export default function AddRoom() {
+  const [selectedUser, setSelectedUser] = useState([]);
   const [listUser, setListUser] = useState([]);
   const [search, setSearch] = useState('');
+
   useEffect(() => {
     const fetchUser = async () => {
       const res = await APISearchUser(search);
@@ -14,13 +16,14 @@ export default function Header({selectedUser, setSelectedUser}) {
     else setListUser([]);
   }, [search])
   return (
-    <Box sx={{display: 'flex', alignItems: 'center'}} m={2}>
+    <Box sx={{display: 'flex', alignItems: 'center'}}>
         <Typography variant='body1' mr={1} > Đến:</Typography>
         <Autocomplete
           multiple
           noOptionsText=""
           size='small'
           fullWidth
+          sx={{maxWidth: "90%"}}
           popupIcon={null}
           value={selectedUser}
           onChange={(event, newValue) => {
