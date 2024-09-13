@@ -3,15 +3,15 @@ import React, { useContext, useState } from "react";
 import { AuthContext } from "./../../context/AuthProvider";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 
-export default function ChatContent({ listMessage }) {
+export default function ChatContent({ listMessage ,setListMessage}) {
   const [anchorEl, setAnchorEl] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
   const {
     user: { uid },
   } = useContext(AuthContext);
   const handleDeleteMessage = () => {
-    // setMessages(listMessage.filter((message) => message.id !== selectedMessage.id));
-    // handleClose();
+    setListMessage(listMessage.filter((message) => message.id !== selectedMessage.id));
+    handleClose();
   }
   const handleClose = () => {
     setAnchorEl(false);
@@ -62,7 +62,7 @@ export default function ChatContent({ listMessage }) {
                 backgroundColor: "grey.300",
               },
             }}
-            onClick={(e) => {}}
+            onClick={(e) => { setAnchorEl(e.currentTarget); setSelectedMessage(message) }}
           />)}
           <Box
             sx={{

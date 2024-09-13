@@ -67,25 +67,17 @@ export const resolvers = {
     },
     createRoom: async (parent, args) => {
       try {
-      const dataMessage = JSON.parse(args.messages);
-      console.log(dataMessage);
-      let listIdMessage = [];
-      for (let i = 0; i < dataMessage.length; i++) {
-        const newMessage = new MessageModel();
-        newMessage.sender = dataMessage[i].sender.uid;
-        newMessage.content = dataMessage[i].content;
-        await newMessage.save();
-        listIdMessage.push(newMessage._id);
-      }
-        const room = await RoomModel.findOne({ listUser: args.uid });
+      const newMessage = new MessageModel(JSON.parse(args.messages));
+      await newMessage.save();
+      const room = await RoomModel.findOne({ listUser: args.uid });
       if (room) {
-        room.listMessage.push(...listIdMessage);
+        room.listMessage.push(...newMessage.id);
         await room.save();
         return room;
       }
       const newRoom = new RoomModel(args);
       newRoom.listUser = args.uid;
-      newRoom.listMessage = listIdMessage;
+      newRoom.listMessage.push(newMessage._id);
       await newRoom.save();
       return newRoom;
       } catch (error) {

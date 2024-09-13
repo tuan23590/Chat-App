@@ -5,6 +5,8 @@ import AuthProvider from './../context/AuthProvider';
 import ProtectedRoute from "./ProtectedRoute";
 import ErrorPage from "../pages/ErrorPage";
 import SubscriptionProvider from './../context/SubscriptionProvider';
+import ChatWindows from "../compument/ChatRoom/ChatWindows";
+import { APIGetRoom } from "../utils/RoomUtil";
 
 const AuthLayout = () => {
   return (
@@ -31,6 +33,13 @@ export default createBrowserRouter([
           {
             element: <Home />,
             path: "/",
+            children: [
+              {
+                element: <ChatWindows />,
+                path: "/:roomId",
+                loader: APIGetRoom,
+              },
+            ],
           },
         ],
       }

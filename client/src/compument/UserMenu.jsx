@@ -27,7 +27,6 @@ export default function UserMenu() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          paddingY: 2,
           cursor: "pointer",
         }}
         onClick={handleOpen}

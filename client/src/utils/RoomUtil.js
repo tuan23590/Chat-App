@@ -5,7 +5,10 @@ export const APICreateRoom = async (formData) => {
     id
   }
 }`;
-    const {createRoom} = await GraphQLrequest({query, variables: formData});
+    const {createRoom} = await GraphQLrequest({query, variables: {
+        uid: formData.uid,
+        messages: JSON.stringify(formData.message),
+    }});
     return createRoom;
 };
 
