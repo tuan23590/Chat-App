@@ -51,7 +51,7 @@ export const resolvers = {
       return user;
     },
     seen: async (parent) => {
-      const user = await UserModel.findOne({ uid: parent.seen });
+      const user = await UserModel.find({ uid: { $in: parent.seen } });
       return user;
     },
     room: async (parent) => {
@@ -60,6 +60,16 @@ export const resolvers = {
     }
   },
   Mutation: {
+    seenMessage: async (parent, args) => {
+      const messages = await MessageModel.find({ _id: { $in: args.messageId } });
+      messages.forEach(async (message) => {
+        message.seen.push(args.userId);
+        await message.save();
+      });
+      const message = messages[messages.length - 1];
+      pubsub.publish('SEEN_MESSAGE', { seenMessage: message });
+      return messages;
+    },
     createUser: async (parent, args) => {
       const user = await UserModel.findOne({ uid: args.uid });
       if (user) {
@@ -74,6 +84,7 @@ export const resolvers = {
       try {
       const newMessage = new MessageModel(JSON.parse(args.messages));
       newMessage.receiver = args.uid;
+      newMessage.seen.push(newMessage.sender);
       await newMessage.save();
       const room = await RoomModel.findOne({ listUser: args.uid });
       if (room) {
@@ -91,7 +102,7 @@ export const resolvers = {
       newMessage.room = newRoom._id;
       await newMessage.save();
       await newRoom.save();
-      pubsub.publish('NEW_MESSAGE', { newMessage });
+      pubsub.publish('NEW_ROOM', { newRoom });
       return newRoom;
       } catch (error) {
         console.log(error);
@@ -102,6 +113,7 @@ export const resolvers = {
       const newMessage = new MessageModel(args);
       newMessage.receiver = room.listUser.filter((user) => user !== args.sender);
       newMessage.room = args.roomId;
+      newMessage.seen.push(args.sender);
       room.listMessage.push(newMessage._id);
       await room.save();
       await newMessage.save();
@@ -114,9 +126,25 @@ export const resolvers = {
       subscribe: withFilter(
         () => pubsub.asyncIterator('NEW_MESSAGE'),
         (payload, variables) => {
-          return payload.newMessage.receiver.includes(variables.subscriber);
+          return payload.newMessage.receiver.includes(variables.subscriber) || payload.newMessage.sender === variables.subscriber;
         },
       ),
+  },
+  newRoom: {
+    subscribe: withFilter(
+      () => pubsub.asyncIterator('NEW_ROOM'),
+      (payload, variables) => {
+        return payload.newRoom.listUser.includes(variables.subscriber);
+      },
+    ),
+  },
+  seenMessage: {
+    subscribe: withFilter(
+      () => pubsub.asyncIterator('SEEN_MESSAGE'),
+      (payload, variables) => {
+        return payload.seenMessage.receiver.includes(variables.subscriber);
+      },
+    ),
   },
 }
 };

@@ -37,8 +37,11 @@ type Mutation {
     createUser(uid: String, name: String, email: String, role: String, photoURL: String): User,
     createRoom(uid: [String],messages: String): Room,
     createMessage(content: String, type: String, sender: String, roomId:String): Message,
+    seenMessage(messageId: [String], userId: String): Message,
 }
 type Subscription {
-    newMessage(subscriber: String): Message
+    newMessage(subscriber: String): Message,
+    newRoom(subscriber: String): Room,
+    seenMessage(subscriber: String): Message,
 }
 `;

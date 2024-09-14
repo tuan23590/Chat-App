@@ -1,19 +1,21 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Box, Typography } from "@mui/material";
+import { Avatar, AvatarGroup, Box, Typography } from "@mui/material";
 import ChatInput from "./ChatInput";
 import ChatContent from "./ChatContent";
 import { AuthContext } from "../../context/AuthProvider";
 import { useLoaderData, useNavigate } from "react-router-dom";
 import { APICreateRoom } from "./../../utils/RoomUtil";
-import { APICreateMessage, APINewMessage } from "../../utils/MessageUtils";
+import { APICreateMessage, APINewMessage, APISeenMessage } from "../../utils/MessageUtils";
 
 export default function ChatWindows({ setSelectedUser, selectedUser }) {
   const dataRoom = useLoaderData();
   const [listMessage, setListMessage] = useState([]);
   const [message, setMessage] = useState("");
   const { user } = useContext(AuthContext);
+  const currentUid = user?.uid;
   const navigate = useNavigate();
   const {data} = APINewMessage(user.uid);
+
   const createRoom = async () => {
     const formData = {
       message: {
@@ -23,7 +25,6 @@ export default function ChatWindows({ setSelectedUser, selectedUser }) {
       },
       uid: [...selectedUser.map((user) => user.uid), user.uid],
     };
-    console.log("formData: ", formData);
     const res = await APICreateRoom(formData);
     setListMessage([...listMessage, formData.message]);
     setMessage("");
@@ -33,19 +34,25 @@ export default function ChatWindows({ setSelectedUser, selectedUser }) {
     }
   };
   const createMessage = async () => {
+    if (!message) return;
     const formData = {
       content: message,
       type: "text",
       sender: user.uid,
       roomId: dataRoom.id,
     };
+    setListMessage([...listMessage, {
+      content: message,
+      type: "text",
+      sender: {uid: user.uid},
+      roomId: dataRoom.id,
+    }]);
+    setMessage("");
     const res = await APICreateMessage(formData);
-    if (res) {
-      setListMessage([...listMessage, res]);
-      setMessage("");
-    }else{
+    if (!res) {
       alert("Gửi tin nhắn thất bại");
     }
+    
   };
   const handleSendMessage = async () => {
     if (selectedUser) {
@@ -54,13 +61,32 @@ export default function ChatWindows({ setSelectedUser, selectedUser }) {
       createMessage();
     }
   };
-  useEffect(() => {
-    if (dataRoom) {
-      setListMessage(dataRoom.listMessage);
+  const handleSeenMessage = async (formData) => {
+    if(formData.messageId.length > 0){
+      const res = await APISeenMessage(formData);
+      if (!res) {
+        alert("Đã xảy ra lỗi khi cập nhật trạng thái tin nhắn");
+      }
     }
-  }, [dataRoom]);
+  };
   useEffect(() => {
-    if (data && data.newMessage?.room?.id === dataRoom?.id) {
+    if (dataRoom && user.uid) {
+      setListMessage(dataRoom.listMessage);
+      const formData = {
+        messageId: dataRoom.listMessage.filter((message) => !message.seen.map((user) => user.uid).includes(user.uid)).map((message) => message.id),
+        userId: user.uid,
+      };
+      handleSeenMessage(formData);
+    }
+  }, [dataRoom,user?.uid]);
+  
+  useEffect(() => {
+    if (data && data.newMessage?.room?.id === dataRoom?.id && data.newMessage?.sender?.uid !== user.uid) {
+      const formData = {
+        messageId: [data.newMessage.id],
+        userId: user.uid,
+      };
+      handleSeenMessage(formData);
       setListMessage([...listMessage, data.newMessage]);
     }
   }, [data]);
@@ -69,17 +95,26 @@ export default function ChatWindows({ setSelectedUser, selectedUser }) {
     chatContent.scrollTop = chatContent.scrollHeight;
   }, [listMessage]);
   return (
-    <Box height={"100vh"} sx={{ display: "flex", flexDirection: "column" }}>
-      <Box sx={{ padding: 2 }}>
+    <Box height={"100vh"} sx={{ display: "flex", flexDirection: "column", 
+      '@media (max-width: 600px)': {
+        height: '92vh'
+      }
+    }}>
+      <Box sx={{ padding: 2}}>
         {selectedUser ? (
           <Typography variant="h6" fontWeight={"600"}>
             Tạo tin nhắn mới với:{" "}
             {selectedUser.map((user) => user.name).join(", ")}
           </Typography>
         ) : (
-          <Box>
-            <Typography variant="h6" fontWeight={"600"}>
-              {dataRoom.name}
+          <Box sx={{display: 'flex', alignItems: 'center'}}>
+            <AvatarGroup max={2}>
+              {dataRoom?.listUser?.filter((user) => user.uid !== currentUid).map((user) => (
+                <Avatar key={user.uid} alt={user.name} src={user.photoURL} />
+              ))}
+            </AvatarGroup> 
+            <Typography variant="h6" fontWeight={"600"} noWrap ml={2}>
+              {dataRoom.name || dataRoom?.listUser?.filter((user) => user.uid !== currentUid)[0]?.name}
             </Typography>
           </Box>
         )}
@@ -104,20 +139,3 @@ export default function ChatWindows({ setSelectedUser, selectedUser }) {
     </Box>
   );
 }
-
-
-// import { Box } from '@mui/material'
-// import React from 'react'
-
-// export default function ChatWindows() {
-//   return (
-//     <Box id='box-0' sx={{height: '900px', display: "flex", flexDirection: "column", border: 3}}>
-//     <Box id='box-1' sx={{height: '200px'}}>1</Box>
-//     <Box id='box-2' sx={{border: 1, flexGrow: 1, overflowY: 'scroll'}}>
-//       <Box id='box-2-1' sx={{height: '900px'}}>2-1</Box>
-//       <Box id='box-2-2' sx={{height: '200px'}}>2-2</Box>
-//     </Box>
-//     <Box id='box-3' sx={{minHeight: '200px', flexShrink: 0}}>3</Box>
-//   </Box>  
-//   )
-// }

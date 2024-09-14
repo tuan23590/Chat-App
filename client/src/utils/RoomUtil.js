@@ -1,4 +1,37 @@
 import { GraphQLrequest } from "./request";
+import { gql, useSubscription } from '@apollo/client';
+
+export const APINewRoom = (subscriber) => {
+  const { data, loading, error } = useSubscription(gql`
+    subscription NewRoom($subscriber: String) {
+  newRoom(subscriber: $subscriber) {
+     id
+    photoURL
+    name
+    listUser {
+      uid
+      name
+      photoURL
+    }
+    LastMessage {
+      content
+      createdAt
+      type
+      sender {
+        uid
+      }
+      seen {
+        uid
+        photoURL
+      }
+    }
+  }
+}
+  `, {variables: {subscriber}});
+  const newRoom = data?.newRoom;
+  return { data, loading, error,newRoom };
+};
+
 export const APICreateRoom = async (formData) => {
     const query = `mutation CreateRoom($uid: [String], $messages: String) {
   createRoom(uid: $uid, messages: $messages) {
@@ -23,10 +56,17 @@ export const APIGetListRoom = async (uid) => {
       name
       photoURL
     }
-    LastMessage {
+   LastMessage {
       content
       createdAt
       type
+      sender {
+        uid
+      }
+      seen {
+        uid
+        photoURL
+      }
     }
   }
 }`;

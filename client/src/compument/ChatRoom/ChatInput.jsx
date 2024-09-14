@@ -29,7 +29,7 @@ export default function ChatInput({message,setMessage,handleSendMessage}) {
         onKeyDown={handleKeyDown}
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        placeholder="Type a message..."
+        placeholder="Nhập tin nhắn..."
       />
       <SendIcon
         fontSize="large"

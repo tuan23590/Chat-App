@@ -43,7 +43,7 @@ export default function ChatContent({ listMessage ,setListMessage}) {
             {message.sender.uid == uid ||
             message.sender.uid == listMessage[index + 1]?.sender.uid ? null : (
               <Avatar
-                src={message.sender.uid.photoURL}
+                src={message.sender.photoURL}
                 sx={{ width: "100%", height: "100%" }}
               />
             )}
