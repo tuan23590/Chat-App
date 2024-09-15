@@ -67,18 +67,19 @@ export default function Home() {
     }
   }, [newMessage,newRoom]);
 
-  // useEffect(() => {
-  //   if(seenMessage){
-  //     const room = rooms.find( room => room.id === seenMessage.room.id);
-  //     if(room){
-  //       room.LastMessage.seen = seenMessage.seen;
-  //       const sortRooms = rooms.sort(
-  //         (a, b) => b.LastMessage?.createdAt - a.LastMessage?.createdAt
-  //       );
-  //       setRooms([...sortRooms]);
-  //     }
-  //   }
-  // }, [seenMessage]);
+  useEffect(() => {
+    // if(seenMessage){
+    //   const room = rooms.find( room => room.id === seenMessage.room.id);
+    //   if(room){
+    //     room.LastMessage= seenMessage;
+    //     const sortRooms = rooms.sort(
+    //       (a, b) => b.LastMessage?.createdAt - a.LastMessage?.createdAt
+    //     );
+    //     setRooms([...sortRooms]);
+    //   }
+    // }
+    // fetchRoom();
+  }, [seenMessage]);
   return (
     <>
       <Grid2
@@ -228,7 +229,8 @@ export default function Home() {
                           {item?.LastMessage ? (
                           <Typography noWrap
                           sx={{ 
-                            fontWeight: item?.LastMessage?.seen?.map( user => user.uid).includes(currentUid) ? null : "600",
+                            fontWeight: item?.LastMessage.sender.uid == currentUid ? "" : 
+                            item?.LastMessage?.seen?.map( user => user.uid).includes(currentUid) ? null : "600",
                           }}
                           >
                             {item.LastMessage?.sender.uid === currentUid ? "Bạn: " : ""} {item.LastMessage?.content} •
@@ -301,6 +303,7 @@ export default function Home() {
             <ChatWindows
               selectedUser={selectedUser}
               setSelectedUser={setSelectedUser}
+              setOpenRoom={setOpenRoom}
             />
           ) : (
             <Outlet />

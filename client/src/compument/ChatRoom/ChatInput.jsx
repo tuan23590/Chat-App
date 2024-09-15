@@ -2,7 +2,7 @@ import { Box, TextField } from "@mui/material";
 import React from "react";
 import SendIcon from '@mui/icons-material/Send';
 
-export default function ChatInput({message,setMessage,handleSendMessage}) {
+export default function ChatInput({message,setMessage,handleSendMessage,setOpenRoom}) {
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -19,6 +19,11 @@ export default function ChatInput({message,setMessage,handleSendMessage}) {
         multiline
         autoFocus 
         maxRows={5}
+        onFocus={(e)=>{
+          if(typeof setOpenRoom === 'function'){
+            setOpenRoom(false);
+          }
+        }}
         InputProps={{
           sx: {
             borderRadius: "25px",

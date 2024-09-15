@@ -33,13 +33,13 @@ export const APINewRoom = (subscriber) => {
 };
 
 export const APICreateRoom = async (formData) => {
-    const query = `mutation CreateRoom($uid: [String], $messages: String) {
-  createRoom(uid: $uid, messages: $messages) {
+    const query = `mutation CreateRoom($uid: [String], $messages: String, $sender: String) {
+  createRoom(uid: $uid, messages: $messages, sender: $sender) {
     id
   }
 }`;
     const {createRoom} = await GraphQLrequest({query, variables: {
-        uid: formData.uid,
+        ...formData,
         messages: JSON.stringify(formData.message),
     }});
     return createRoom;

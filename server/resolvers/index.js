@@ -47,7 +47,7 @@ export const resolvers = {
       return user;
     },
     receiver: async (parent) => {
-      const user = await UserModel.findOne({ uid: parent.receiver });
+      const user = await UserModel.find({ uid: { $in: parent.receiver } });
       return user;
     },
     seen: async (parent) => {
@@ -66,8 +66,6 @@ export const resolvers = {
         message.seen.push(args.userId);
         await message.save();
       });
-      const message = messages[messages.length - 1];
-      pubsub.publish('SEEN_MESSAGE', { seenMessage: message });
       return messages;
     },
     createUser: async (parent, args) => {
@@ -84,7 +82,7 @@ export const resolvers = {
       try {
       const newMessage = new MessageModel(JSON.parse(args.messages));
       newMessage.receiver = args.uid;
-      newMessage.seen.push(newMessage.sender);
+      newMessage.sender = args.sender;
       await newMessage.save();
       const room = await RoomModel.findOne({ listUser: args.uid });
       if (room) {
@@ -97,6 +95,7 @@ export const resolvers = {
       }
       const newRoom = new RoomModel(args);
       newRoom.listUser = args.uid;
+      newRoom.listUser.push(args.sender);
       newRoom.listMessage.push(newMessage._id);
       newRoom.name = args.uid.length > 2 ? 'Group Chat @' + args.uid.join(', ') : '';
       newMessage.room = newRoom._id;
@@ -113,7 +112,6 @@ export const resolvers = {
       const newMessage = new MessageModel(args);
       newMessage.receiver = room.listUser.filter((user) => user !== args.sender);
       newMessage.room = args.roomId;
-      newMessage.seen.push(args.sender);
       room.listMessage.push(newMessage._id);
       await room.save();
       await newMessage.save();
