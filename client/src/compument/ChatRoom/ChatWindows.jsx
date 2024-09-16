@@ -10,16 +10,16 @@ import {
   APINewMessage,
   APISeenMessage,
 } from "../../utils/MessageUtils";
+import { AppContext } from "../../context/AppProvider";
 
 export default function ChatWindows({
-  setSelectedUser,
-  selectedUser,
   setOpenRoom,
 }) {
   const dataRoom = useLoaderData();
   const [listMessage, setListMessage] = useState([]);
   const [message, setMessage] = useState("");
   const { user } = useContext(AuthContext);
+  const {selectedUser, setSelectedUser} = useContext(AppContext);
   const currentUid = user?.uid;
   const navigate = useNavigate();
   const { data } = APINewMessage(user.uid);
@@ -57,29 +57,22 @@ export default function ChatWindows({
     }
   };
   const handleSendMessage = async () => {
-    if (selectedUser) {
+    if (selectedUser.length) {
       createRoom();
     } else {
       createMessage();
     }
   };
-  const handleSeenMessage = async (formData) => {
-    if (formData.messageId.length) {
-      const res = await APISeenMessage(formData);
+  const handleSeenMessage = async (roomId,userId) => {
+      const res = await APISeenMessage(roomId,userId);
       if (!res) {
         alert("Đã xảy ra lỗi khi cập nhật trạng thái tin nhắn");
       }
-    }
   };
   useEffect(() => {
     if (dataRoom && user.uid) {
       setListMessage(dataRoom.listMessage);
-      const formData = {
-        messageId: dataRoom.listMessage.filter((message) =>!message.seen.map((user) => user.uid).includes(user.uid)
-          ).filter((message) => message.sender.uid !== user.uid).map((message) => message.id),
-        userId: user.uid,
-      };
-      handleSeenMessage(formData);
+      handleSeenMessage(dataRoom.id,user.uid);
     }
   }, [dataRoom, user?.uid]);
 
@@ -90,11 +83,7 @@ export default function ChatWindows({
       data.newMessage?.sender?.uid !== user.uid &&
       !listMessage.map((message) => message.id).includes(data.newMessage.id)
     ) {
-      const formData = {
-        messageId: [data.newMessage.id],
-        userId: user.uid,
-      };
-      handleSeenMessage(formData);
+      handleSeenMessage(dataRoom.id,user.uid);
       setListMessage([...listMessage, data.newMessage]);
     }
   }, [data]);
@@ -114,7 +103,7 @@ export default function ChatWindows({
       }}
     >
       <Box sx={{ padding: 2 }}>
-        {selectedUser ? (
+        {selectedUser.length ? (
           <Typography variant="h6" fontWeight={"600"}>
             Tạo tin nhắn mới với:{" "}
             {selectedUser.map((user) => user.name).join(", ")}

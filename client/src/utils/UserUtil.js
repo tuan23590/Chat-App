@@ -22,3 +22,20 @@ export const APISearchUser = async (name) => {
   const {searchUser} = await GraphQLrequest({query, variables: {name}});
   return searchUser;
 };
+
+export const APIGetUser = async (uid) => {
+  const query = `query GetUser($uid: String) {
+  getUser(uid: $uid) {
+    id
+    uid
+    name
+    email
+    role
+    photoURL
+    online
+    lastOnline
+  }
+}`;
+  const {getUser} = await GraphQLrequest({query, variables: {uid}});
+  return getUser;
+};

@@ -10,44 +10,22 @@ import React, { useContext, useEffect, useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { Outlet, useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthProvider";
 import AddRoom from "./../compument/ChatRoom/AddRoom";
 import { TIMEAGO } from "./../function/index";
 import ChatWindows from "../compument/ChatRoom/ChatWindows";
 import UserMenu from "./../compument/UserMenu";
-import { APIGetListRoom, APINewRoom } from "../utils/RoomUtil";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import { APINewMessage, APISeenMessageSubscription } from "../utils/MessageUtils";
+import { APINewMessage } from "../utils/MessageUtils";
+import { AppContext } from "../context/AppProvider";
 
 export default function Home() {
-  const [rooms, setRooms] = useState([]);
-  const { user } = useContext(AuthContext);
-  const currentUid = user?.uid;
+  const {rooms, setRooms,currentUid,selectedUser } = useContext(AppContext);
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState([]);
   const [openRoom, setOpenRoom] = useState(false);
-  
-  const {newRoom} = APINewRoom(user.uid);
-  const {seenMessage} = APISeenMessageSubscription(user.uid);
-  const { newMessage } = APINewMessage(user.uid);
+  const { newMessage } = APINewMessage(currentUid);
 
-  const fetchRoom = async () => {
-    const res = await APIGetListRoom(user?.uid);
-    if (res) {
-      res?.LastMessage ?
-      setRooms(
-        res.sort((a, b) => b.LastMessage?.createdAt - a.LastMessage?.createdAt)
-      ) : setRooms(res);
-    }
-  };
-
-  useEffect(() => {
-    if (user.uid) {
-      fetchRoom();
-    }
-  }, [user?.uid]);
   useEffect(() => {
     if (newMessage) {
       const newLastMessage = newMessage;
@@ -61,25 +39,7 @@ export default function Home() {
       }
       return;
     }
-    if (newRoom && !rooms.includes(newRoom)) {
-      setRooms([newRoom,...rooms]);
-      return;
-    }
-  }, [newMessage,newRoom]);
-
-  useEffect(() => {
-    // if(seenMessage){
-    //   const room = rooms.find( room => room.id === seenMessage.room.id);
-    //   if(room){
-    //     room.LastMessage= seenMessage;
-    //     const sortRooms = rooms.sort(
-    //       (a, b) => b.LastMessage?.createdAt - a.LastMessage?.createdAt
-    //     );
-    //     setRooms([...sortRooms]);
-    //   }
-    // }
-    // fetchRoom();
-  }, [seenMessage]);
+  }, [newMessage]);
   return (
     <>
       <Grid2
@@ -138,8 +98,6 @@ export default function Home() {
 
             {open && (
               <AddRoom
-                selectedUser={selectedUser}
-                setSelectedUser={setSelectedUser}
               />
             )}
             <TextField
@@ -221,7 +179,7 @@ export default function Home() {
                         >
                           {item?.name ||
                             item?.listUser?.filter(
-                              (user) => user.uid !== currentUid
+                              (user) =>  user.uid !== currentUid
                             )[0]?.name ||
                             "Chỉ có mình bạn"}
                         </Typography>
@@ -229,11 +187,11 @@ export default function Home() {
                           {item?.LastMessage ? (
                           <Typography noWrap
                           sx={{ 
-                            fontWeight: item?.LastMessage.sender.uid == currentUid ? "" : 
-                            item?.LastMessage?.seen?.map( user => user.uid).includes(currentUid) ? null : "600",
+                            fontWeight: item?.LastMessage.sender?.uid == currentUid ? "" : 
+                            item?.LastMessage?.seen?.map( user => currentUid).includes(currentUid) ? null : "600",
                           }}
                           >
-                            {item.LastMessage?.sender.uid === currentUid ? "Bạn: " : ""} {item.LastMessage?.content} •
+                            {item.LastMessage?.sender?.uid === currentUid ? "Bạn: " : ""} {item.LastMessage.isDeleted ? "Tin nhắn đã xóa" : item.LastMessage?.content} •
                           </Typography>
                           ):(
                             <Typography noWrap>
@@ -243,7 +201,7 @@ export default function Home() {
                           <Typography sx={{ whiteSpace: "nowrap", mx: 1 }}>
                             {item.LastMessage?.createdAt && (TIMEAGO(item?.LastMessage?.createdAt))}
                           </Typography>
-                          {item.LastMessage?.sender.uid === currentUid && (
+                          {item.LastMessage?.sender?.uid === currentUid && (
                           <AvatarGroup max={2} 
                           sx={{
                             "& .MuiAvatar-root": {
@@ -252,9 +210,9 @@ export default function Home() {
                             },
                           }}
                           >
-                            {item?.LastMessage?.seen.filter( user => user.uid !== currentUid).map((user) => (
+                            {item?.LastMessage?.seen.filter( user => currentUid !== currentUid).map((user) => (
                               <Avatar
-                                key={user.uid}
+                                key={currentUid}
                                 src={user.photoURL}
                               />
                             ))}
@@ -301,8 +259,6 @@ export default function Home() {
         >
           {selectedUser.length > 0 ? (
             <ChatWindows
-              selectedUser={selectedUser}
-              setSelectedUser={setSelectedUser}
               setOpenRoom={setOpenRoom}
             />
           ) : (

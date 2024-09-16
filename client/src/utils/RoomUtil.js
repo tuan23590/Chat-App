@@ -15,6 +15,7 @@ export const APINewRoom = (subscriber) => {
     }
     LastMessage {
       content
+      isDeleted
       createdAt
       type
       sender {
@@ -59,6 +60,7 @@ export const APIGetListRoom = async (uid) => {
    LastMessage {
       content
       createdAt
+      isDeleted
       type
       sender {
         uid
@@ -89,6 +91,8 @@ export const APIGetRoom = async ({params: {roomId}}) => {
     listMessage {
       id
       content
+      isDeleted
+      isEdited
       type
       sender {
         id

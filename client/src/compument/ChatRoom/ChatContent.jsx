@@ -10,6 +10,9 @@ import { AuthContext } from "./../../context/AuthProvider";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import DoneIcon from '@mui/icons-material/Done';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
+import { APIDeleteMessage } from "../../utils/MessageUtils";
+import { FORMAT_TIME } from "../../function";
+import HtmlTooltip from './../HtmlTooltip';
 
 export default function ChatContent({ listMessage, setListMessage }) {
   const [anchorEl, setAnchorEl] = useState(false);
@@ -18,8 +21,15 @@ export default function ChatContent({ listMessage, setListMessage }) {
     user: { uid },
   } = useContext(AuthContext);
   const handleDeleteMessage = () => {
+    const res = APIDeleteMessage(selectedMessage.id);
+    if (!res) alert("Xóa tin nhắn không thành công");
     setListMessage(
-      listMessage.filter((message) => message.id !== selectedMessage.id)
+      listMessage.map((message) => {
+        if (message.id === selectedMessage.id) {
+          return { ...message, isDeleted: true, content: "" };
+        }
+        return message;
+      })
     );
     handleClose();
   };
@@ -87,6 +97,13 @@ export default function ChatContent({ listMessage, setListMessage }) {
               </Box>
               </>
             )}
+            <HtmlTooltip 
+              title={
+                <React.Fragment>
+                  <Typography color="inherit">{FORMAT_TIME(message.createdAt)}</Typography>
+                </React.Fragment>
+              }
+            >
             <Box
               sx={{
                 maxWidth: "70%",
@@ -114,18 +131,18 @@ export default function ChatContent({ listMessage, setListMessage }) {
                       message.sender.uid === listMessage[index + 1]?.sender.uid
                     ? "0px 30px 30px 30px"
                     : "30px 30px 30px 30px",
-                backgroundColor:
-                  message.sender.uid === uid ? "primary.main" : "grey.300",
-                color: message.sender.uid === uid ? "white" : "black",
+                backgroundColor: message.isDeleted ? "" : message.sender.uid === uid ? "primary.main" : "grey.300",
+                border: message.isDeleted ? "1px solid black" : "none",
+                color: message.isDeleted ? "black" : message.sender.uid === uid ? "white" : "black",
               }}
             >
-              <Typography variant="body1">{message.content}</Typography>
+              <Typography variant="body1">{message.isDeleted ? "Tin nhắn đã bị xóa": message.content }</Typography>
             </Box>
-              
+            </HtmlTooltip>
             {message.sender.uid !== uid && (
               <>
               <Box ml={1}>
-              {message.seen?.length == message.receiver?.length ? <DoneAllIcon fontSize="small" /> : <DoneIcon fontSize="small" />} 
+              {message.seen?.length == message.receiver?.length ? <DoneAllIcon fontSize="small" /> : <DoneIcon fontSize="small" />}
               </Box>
               <MoreHorizIcon
                 className="more-icon"
@@ -151,7 +168,12 @@ export default function ChatContent({ listMessage, setListMessage }) {
           </Box>
       ))}
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-        <MenuItem onClick={handleDeleteMessage}>Delete</MenuItem>
+        {selectedMessage?.sender.uid === uid && selectedMessage?.isDeleted === false && (
+          <>
+          <MenuItem onClick={handleDeleteMessage}>Xóa tin nhắn</MenuItem>
+          <MenuItem onClick={null}>Chỉnh sửa tin nhắn</MenuItem>
+          </>
+        )}
       </Menu>
     </Box>
   );

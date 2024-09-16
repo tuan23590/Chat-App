@@ -17,10 +17,14 @@ const UserSchema = new mongoose.Schema({
     photoURL: {
         type: String,
     },
-    status: {
-        type: String,
-        default: 'offline'
+    online: {
+        type: Boolean,
+        default: false
     },
+    lastOnline: {
+        type: Date,
+        default: Date.now
+    }
 },{timestamps: true});
 
 const UserModel = mongoose.model('User',UserSchema);

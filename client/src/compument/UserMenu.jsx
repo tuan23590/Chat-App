@@ -1,14 +1,13 @@
 import React, { useContext, useState } from "react";
 import { AuthContext } from "./../context/AuthProvider";
-import { useNavigate } from "react-router-dom";
-import { Avatar, Box, Menu, MenuItem, Typography } from "@mui/material";
+import { Avatar, Box, Menu, MenuItem } from "@mui/material";
+import StyledBadge from "./StyledBadge ";
 
 export default function UserMenu() {
   const {
     user: { displayName, photoURL, auth,email },
   } = useContext(AuthContext);
   const [anchorEl, setAnchorEl] = useState(false);
-  const navigate = useNavigate();
   const handleOpen = (e) => {
     setAnchorEl(e.currentTarget);
   };
@@ -18,7 +17,7 @@ export default function UserMenu() {
   const handleLogout = () => {
     auth.signOut();
     setAnchorEl(false);
-    navigate("/login");
+    window.location.href = "/login";
   };
   return (
     <>
@@ -31,11 +30,18 @@ export default function UserMenu() {
         }}
         onClick={handleOpen}
       >
+        <StyledBadge
+          overlap="circular"
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          variant="dot"
+          invisible = {false}
+        >
         <Avatar
           alt="Avatar"
           src={photoURL}
           sx={{ width: "35px", height: "35px", marginRight: "5px" }}
         />
+        </StyledBadge>
       </Box>
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose} sx={{
         

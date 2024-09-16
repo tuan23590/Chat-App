@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import {
   createUserWithEmailAndPassword,
@@ -30,7 +30,7 @@ export default function Login() {
       photoUrl: user.photoURL,
     });
     if (data) {
-      navigate("/");
+      window.location.href = "/";
     } else {
       setError("Đăng nhập thất bại");
     }
@@ -39,6 +39,7 @@ export default function Login() {
     const provider = new GoogleAuthProvider();
     const res = await signInWithPopup(auth, provider);
     createUserData(res.user);
+    window.location.reload();
   };
   const handleLoginWithEmailAndPassword = async () => {
     if (email === "" || password === "") {
@@ -48,6 +49,7 @@ export default function Login() {
     try {
       const res = await signInWithEmailAndPassword(auth, email, password);
       createUserData(res.user);
+      window.location.reload();
     } catch (error) {
       console.log(error.code);
       if (
@@ -80,6 +82,11 @@ export default function Login() {
       }
     }
   };
+  useEffect(() => {
+    if(localStorage.getItem("uid")){
+      window.location.href = "/";
+    }
+  }, []);
   return (
     <Box
       sx={{

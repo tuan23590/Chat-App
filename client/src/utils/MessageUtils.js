@@ -8,6 +8,7 @@ export const APINewMessage = (subscriber) => {
     id
     content
     type
+    isDeleted
     sender {
       id
       uid
@@ -39,6 +40,7 @@ export const APISeenMessageSubscription = (subscriber) => {
     id
     content
     type
+    isDeleted
     sender {
       id
       uid
@@ -69,6 +71,7 @@ export const APIGetMessages = async (uid) => {
     id
     content
     type
+    isDeleted
     sender {
       id
       uid
@@ -94,6 +97,7 @@ export const APIGetMessages = async (uid) => {
   }
 }`;
     const {getMessages} = await GraphQLrequest({query, variables: {uid}});
+    console.log(getMessages);
     return getMessages;
 };
 
@@ -102,6 +106,7 @@ export const APICreateMessage = async (formData) => {
   createMessage(content: $content, type: $type, sender: $sender, roomId: $roomId) {
     id
     type
+    isDeleted
     sender {
       id
       uid
@@ -126,12 +131,22 @@ export const APICreateMessage = async (formData) => {
   return createMessage;
 };
 
-export const APISeenMessage = async (formData) => {
-  const query = `mutation SeenMessage($messageId: [String], $userId: String) {
-  seenMessage(messageId: $messageId, userId: $userId) {
+export const APISeenMessage = async (roomId,userId) => {
+  const query = `mutation SeenMessage($roomId: String, $userId: String) {
+  seenMessage(roomId: $roomId, userId: $userId) {
     id
   }
 }`;
-  const {seenMessage} = await GraphQLrequest({query, variables: formData});
+  const {seenMessage} = await GraphQLrequest({query, variables: {roomId,userId}});
   return seenMessage;
+};
+
+export const APIDeleteMessage = async (messageId) => {
+  const query = `mutation DeleteMessage($messageId: String) {
+  deleteMessage(messageId: $messageId) {
+    id
+  }
+}`;
+  const {deleteMessage} = await GraphQLrequest({query, variables: {messageId}});
+  return deleteMessage;
 };

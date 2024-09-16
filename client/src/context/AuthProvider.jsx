@@ -16,10 +16,13 @@ export default function AuthProvider({ children }) {
         if (user?.uid) {
           setUser(user);
           localStorage.setItem("accessToken", user.accessToken);
+          localStorage.setItem("uid", user.uid);
           return;
         }else{
           setUser({});
           localStorage.removeItem("accessToken");
+          localStorage.removeItem("uid");
+          console.log("User is not logged in");
           navigate("/login");
         }
     });

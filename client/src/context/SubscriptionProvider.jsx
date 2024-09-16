@@ -5,6 +5,7 @@ import { getMainDefinition } from '@apollo/client/utilities';
 import { createClient } from 'graphql-ws';
 import { GRAPHQL_SUBSCRIPTION_ENDPOINT } from '../utils/constants';
 
+
 const httpLink = new HttpLink({
   uri: GRAPHQL_SUBSCRIPTION_ENDPOINT, // Replace with your GraphQL endpoint
 });
@@ -12,6 +13,9 @@ const httpLink = new HttpLink({
 const wsLink = new GraphQLWsLink(
   createClient({
     url: GRAPHQL_SUBSCRIPTION_ENDPOINT, // Replace with your WebSocket GraphQL endpoint
+    connectionParams: {
+      user: localStorage.getItem('uid'),
+    },
   })
 );
 
@@ -33,9 +37,9 @@ const client = new ApolloClient({
 });
 
 export default function SubscriptionProvider({ children }) {
-    return (
-        <ApolloProvider client={client}>
-          {children}
-        </ApolloProvider>
-      );
+  return (
+    <ApolloProvider client={client}>
+      {children}
+    </ApolloProvider>
+  );
 }
