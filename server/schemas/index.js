@@ -28,6 +28,7 @@ type Room {
     listUser: [User]
     LastMessage: Message
     listMessage: [Message]
+    updatedAt: String
 }
 type Query {
     getUser(uid: String): User,

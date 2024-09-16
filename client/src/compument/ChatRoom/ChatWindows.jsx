@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Avatar, AvatarGroup, Box, Typography } from "@mui/material";
+import { Avatar, AvatarGroup, Badge, Box, Typography } from "@mui/material";
 import ChatInput from "./ChatInput";
 import ChatContent from "./ChatContent";
 import { AuthContext } from "../../context/AuthProvider";
@@ -11,15 +11,14 @@ import {
   APISeenMessage,
 } from "../../utils/MessageUtils";
 import { AppContext } from "../../context/AppProvider";
+import StyledBadge from "../StyledBadge ";
 
-export default function ChatWindows({
-  setOpenRoom,
-}) {
+export default function ChatWindows({ setOpenRoom }) {
   const dataRoom = useLoaderData();
   const [listMessage, setListMessage] = useState([]);
   const [message, setMessage] = useState("");
   const { user } = useContext(AuthContext);
-  const {selectedUser, setSelectedUser} = useContext(AppContext);
+  const { selectedUser, setSelectedUser } = useContext(AppContext);
   const currentUid = user?.uid;
   const navigate = useNavigate();
   const { data } = APINewMessage(user.uid);
@@ -63,16 +62,16 @@ export default function ChatWindows({
       createMessage();
     }
   };
-  const handleSeenMessage = async (roomId,userId) => {
-      const res = await APISeenMessage(roomId,userId);
-      if (!res) {
-        alert("Đã xảy ra lỗi khi cập nhật trạng thái tin nhắn");
-      }
+  const handleSeenMessage = async (roomId, userId) => {
+    const res = await APISeenMessage(roomId, userId);
+    if (!res) {
+      alert("Đã xảy ra lỗi khi cập nhật trạng thái tin nhắn");
+    }
   };
   useEffect(() => {
     if (dataRoom && user.uid) {
       setListMessage(dataRoom.listMessage);
-      handleSeenMessage(dataRoom.id,user.uid);
+      handleSeenMessage(dataRoom.id, user.uid);
     }
   }, [dataRoom, user?.uid]);
 
@@ -83,7 +82,7 @@ export default function ChatWindows({
       data.newMessage?.sender?.uid !== user.uid &&
       !listMessage.map((message) => message.id).includes(data.newMessage.id)
     ) {
-      handleSeenMessage(dataRoom.id,user.uid);
+      handleSeenMessage(dataRoom.id, user.uid);
       setListMessage([...listMessage, data.newMessage]);
     }
   }, [data]);
@@ -114,7 +113,15 @@ export default function ChatWindows({
               {dataRoom?.listUser
                 ?.filter((user) => user.uid !== currentUid)
                 .map((user) => (
-                  <Avatar key={user.uid} alt={user.name} src={user.photoURL} />
+                  <StyledBadge
+                    overlap="circular"
+                    key={user.uid}
+                    anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                    variant="dot"
+                    invisible={!user.online}
+                  >
+                    <Avatar alt={user.name} src={user.photoURL} />
+                  </StyledBadge>
                 ))}
             </AvatarGroup>
             <Typography variant="h6" fontWeight={"600"} noWrap ml={2}>

@@ -6,6 +6,7 @@ export const APINewRoom = (subscriber) => {
     subscription NewRoom($subscriber: String) {
   newRoom(subscriber: $subscriber) {
      id
+     updatedAt
     photoURL
     name
     listUser {
@@ -50,12 +51,14 @@ export const APIGetListRoom = async (uid) => {
   const query = `query GetListRoom($uid: String) {
   getListRoom(uid: $uid) {
     id
+    updatedAt
     photoURL
     name
     listUser {
       uid
       name
       photoURL
+      online
     }
    LastMessage {
       content
@@ -80,13 +83,15 @@ export const APIGetRoom = async ({params: {roomId}}) => {
   const query = `query GetRoom($roomId: String) {
   getRoom(roomId: $roomId) {
     id
+    updatedAt
     photoURL
     name
     listUser {
       uid
       name
       photoURL
-      status
+      online
+      lastOnline
     }
     listMessage {
       id

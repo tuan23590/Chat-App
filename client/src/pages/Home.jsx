@@ -18,12 +18,14 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { APINewMessage } from "../utils/MessageUtils";
 import { AppContext } from "../context/AppProvider";
+import StyledBadge from "../compument/StyledBadge ";
 
 export default function Home() {
   const {rooms, setRooms,currentUid,selectedUser } = useContext(AppContext);
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [openRoom, setOpenRoom] = useState(false);
+
   const { newMessage } = APINewMessage(currentUid);
 
   useEffect(() => {
@@ -157,18 +159,32 @@ export default function Home() {
                           {item?.listUser
                             .filter((user) => user.uid !== currentUid)
                             .map((user) => (
+                              <StyledBadge
+                    overlap="circular"
+                    key={user.uid}
+                    anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                    variant="dot"
+                    invisible={!user.online}
+                  >
                               <Avatar
-                                key={user.uid}
                                 alt={user.name}
                                 src={user.photoURL}
                               />
+                              </StyledBadge>
                             ))}
                         </AvatarGroup>
                         ):(
-                          <Avatar
-                              src={item?.listUser?.filter( user => user.uid !== currentUid)[0]?.photoURL}
-                              alt={item?.listUser?.filter( user => user.uid !== currentUid)[0]?.name}
-                          />
+                          <StyledBadge
+                    overlap="circular"
+                    anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                    variant="dot"
+                    invisible={!item?.listUser?.filter( user => user.uid !== currentUid)[0]?.online}
+                  >
+                    <Avatar
+                        src={item?.listUser?.filter( user => user.uid !== currentUid)[0]?.photoURL}
+                        alt={item?.listUser?.filter( user => user.uid !== currentUid)[0]?.name}
+                    />
+                  </StyledBadge>
                         )}
                       </Grid2>
                       <Grid2 size={8.5}>

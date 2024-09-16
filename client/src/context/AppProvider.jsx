@@ -38,9 +38,7 @@ export default function AppProvider({ children }) {
 const fetchRoom = async (currentUid,setRooms) => {
     const res = await APIGetListRoom(currentUid);
     if (res) {
-      setRooms(
-        res.sort((a, b) => b.LastMessage?.createdAt - a.LastMessage?.createdAt)
-      );
+      setRooms(res.sort((a, b) => b.updatedAt - a.updatedAt));
     }
   };
   const fetchUser = async (currentUid,setCurrentUser) => {

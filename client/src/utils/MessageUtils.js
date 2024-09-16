@@ -16,7 +16,7 @@ export const APINewMessage = (subscriber) => {
       email
       role
       photoURL
-      status
+      online
     }
       room {
       id
@@ -48,7 +48,7 @@ export const APISeenMessageSubscription = (subscriber) => {
       email
       role
       photoURL
-      status
+      online
     }
       room {
       id
@@ -114,7 +114,6 @@ export const APICreateMessage = async (formData) => {
       email
       role
       photoURL
-      status
     }
     seen {
       uid

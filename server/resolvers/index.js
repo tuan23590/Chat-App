@@ -175,28 +175,33 @@ export const resolvers = {
   },
 };
 
+const timeouts = new Map();
+
 export const onConnect = async (ctx) => {
   if (!ctx.connectionParams.user) {
     return null;
   }
   const uid = ctx.connectionParams.user;
-  updateOnline(true,uid, '');
+  updateOnline(true, uid, '');
 };
 
 export const onDisconnect = async (ctx) => {
   if (!ctx.connectionParams.user) {
-    return null ;
+    return null;
   }
   const uid = ctx.connectionParams.user;
-  updateOnline(false,uid, new Date());
+  updateOnline(false, uid, new Date());
 };
 
-let timeout = null;
-const updateOnline = async (state,uid,lastOnline) => {
-  if (timeout) {
-    clearTimeout(timeout);
+const updateOnline = async (state, uid, lastOnline) => {
+  if (timeouts.has(uid)) {
+    clearTimeout(timeouts.get(uid));
   }
-  timeout = setTimeout( async() => {
+
+  const timeout = setTimeout(async () => {
     await UserModel.updateOne({ uid }, { online: state, lastOnline });
+    timeouts.delete(uid);
   }, 10000);
+
+  timeouts.set(uid, timeout);
 };
