@@ -1,6 +1,6 @@
 # Chat Application
 
-This is a real-time chat application built with React, Apollo Client, GraphQL, and Firebase for the client-side, and Node.js, Express, Apollo Server, and MongoDB for the server-side.
+This is a real-time chat application built with React, Apollo Client, GraphQL, and Firebase for the client-side, and Node.js, Apollo Server, and MongoDB for the server-side.
 ## Features
 
 - User authentication with Firebase
