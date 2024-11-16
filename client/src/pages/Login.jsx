@@ -29,6 +29,7 @@ export default function Login() {
       email: user.email,
       photoUrl: user.photoURL,
     });
+    window.location.href = "/";
     if (data) {
       window.location.href = "/";
     } else {
